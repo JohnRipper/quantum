@@ -1,0 +1,11 @@
+{
+  "username": "",
+  "password": "",
+  "nickname": "",
+  "room": "",
+  "global_prefixes": [".", ","],
+  "modules": [
+    "Log",
+    "Manage"
+  ]
+}
