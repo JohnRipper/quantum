@@ -3,7 +3,7 @@
   "password": "",
   "nickname": "",
   "room": "",
-  "global_prefixes": [".", ","],
+  "prefixes": [".", ","],
   "modules": [
     "Log",
     "Manage"

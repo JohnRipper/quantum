@@ -3,5 +3,7 @@ import json
 
 class Log(Cog):
 
-    async def on_message(self, data: dict):
-        print(f"{data['author']['id']}:{self.bot.user_id}")
+    async def msg(self, data: dict):
+        return None
+
+
