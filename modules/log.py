@@ -1,7 +1,23 @@
+
 from lib.cog import Cog
 import json
 
-class Log(Cog):
+from lib.command import makeCommand, Command
+from lib.utils import get_decorators
 
-    async def on_message(self, data: dict):
-        print(f"{data['author']['id']}:{self.bot.user_id}")
+class Log(Cog):
+    async def pvtmsg(self, data: dict):
+        return None
+
+    @makeCommand(name='test' , description='test')
+    async def test(self, c: Command):
+        print("test works")
+        await self.bot.send_message('test works')
+        return
+
+    @makeCommand(name='test' , description='test')
+    async def alsotest(self, c: Command):
+        print(c.name)
+        self.bot.send_message('test works')
+        return
+
