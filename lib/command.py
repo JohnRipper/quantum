@@ -3,6 +3,8 @@ def makeCommand(name, description, cls=None, **attrs):
         if isinstance(f, Command):
             raise TypeError('Callback is already a command.')
         f._command = True
+        f._name = name
+        f._description = description
         return f
     return wrap
 
