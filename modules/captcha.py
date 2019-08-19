@@ -8,6 +8,7 @@ class Captcha(Cog):
         super().__init__(bot)
         self.captcha_client = AnticaptchaClient(self.bot.settings['captcha_key'])
 
+    # captcha is a websocket event.
     async def captcha(self, data: dict):
         await self.do_captcha(key=data['key'])
 

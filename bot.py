@@ -117,7 +117,7 @@ class QuantumBot:
         if tiny_crap['tc'] == 'ping':
             await self.pong()
         if tiny_crap['tc'] == 'msg':
-            # run command helpers eveents in cogs
+            # check for a command, decorators are optional you can do it manually overriding msg in cog
             for prefix in self.settings['prefixes']:
                 # if prefix match continue
                 if tiny_crap['text'].startswith(prefix):
@@ -130,8 +130,6 @@ class QuantumBot:
             if tiny_crap['tc'] == type:
                 for cog in self.cogs:
                     await getattr(cog, type.lower())(tiny_crap)
-
-                    # a simple message processor, doesnt matter which one you override with your cog. user preference.
 
     def handle_to_name(self, handle):
         return self.accounts[handle]
