@@ -49,7 +49,6 @@ class QuantumBot:
         for cog_name in self.settings['modules']:
             self.add_cog(cog_name)
 
-
     async def connect(self):
         self.log.info('starting')
         r = requests.session()

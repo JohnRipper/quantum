@@ -1,23 +1,57 @@
-
 from lib.cog import Cog
-import json
-
 from lib.command import makeCommand, Command
-from lib.utils import get_decorators
+
 
 class Log(Cog):
-    async def pvtmsg(self, data: dict):
-        return None
 
-    @makeCommand(name='test' , description='test')
-    async def test(self, c: Command):
-        print("test works")
-        await self.bot.send_message('test works')
+    #############################
+    # Commands
+    #############################
+    @makeCommand(name='printlog' , description='<-c> <-d> creates a copy of a Chat/debug log ')
+    async def log_to_pastebin(self, c: Command):
+        # TODO
+        if c.message.startswith("-c"):
+            await self.bot.send_message('not implemented for chat logs yet')
+
+        if c.message.startswith("-c"):
+            await self.bot.send_message('not implemented for debug logs yet')
         return
 
-    @makeCommand(name='test' , description='test')
-    async def alsotest(self, c: Command):
-        print(c.name)
-        self.bot.send_message('test works')
+    #############################
+    # websocket events
+    #############################
+    # TODO make pretty.
+
+    async def userlist(self, data):
+        self.logger.info(data)
+        return
+
+    async def join(self, data):
+        self.logger.info(data)
+        return
+
+    async def quit(self, data):
+        self.logger.info(data)
+        return
+
+    async def ping(self, data):
+        # NO
+        # self.logger.debug(data)
+        return
+
+    async def yut_stop(self, data):
+        self.logger.info(data)
+        return
+
+    async def msg(self, data):
+        self.logger.info(data)
+        return
+
+    async def captcha(self, data: dict):
+        self.logger.info(data)
+        return
+
+    def pvtmsg(self, data):
+        self.logger.info(data)
         return
 
