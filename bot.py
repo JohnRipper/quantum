@@ -15,7 +15,6 @@ from lib.command import Command
 logging.basicConfig(
     level=logging.INFO,
     format='%(threadName)10s : %(message)s',
-    stream=sys.stderr,
 )
 
 class QuantumBot:
@@ -28,6 +27,7 @@ class QuantumBot:
         self.message_queue = []
         self.is_running = False
         self.cogs = []
+        self.handle = 0
 
     async def attempt_command(self, cmd:Command):
         for cog in self.cogs:
@@ -35,8 +35,9 @@ class QuantumBot:
             if hasattr(cog, cmd.command):
                 f = getattr(cog, cmd.command)
                 # commands only run if they were given the _command meta data from the @command decorator
-                if f._command:
-                    await getattr(cog, cmd.command)(cmd)
+                if hasattr(f, "_command"):
+                    if f._command:
+                        await getattr(cog, cmd.command)(cmd)
 
     def load_config(self, config=None):
         if config is None:
@@ -82,7 +83,8 @@ class QuantumBot:
         }
 
         r.close()
-        async with websockets.connect(uri=token.json()['endpoint'], subprotocols=['tc'], extra_headers=headers, origin='https://tinychat.com') as self.ws:
+        async with websockets.connect(uri=token.json()['endpoint'], subprotocols=['tc'],
+                                      extra_headers=headers, timeout=600, origin='https://tinychat.com') as self.ws:
             await self.ws.send(json.dumps(payload))
             self.is_running = True
             async for message in self.ws:
@@ -104,11 +106,13 @@ class QuantumBot:
 
     async def consumer(self, message: str):
         print(message)
-
         tiny_crap = json.loads(message)
         if tiny_crap['tc'] == 'userlist':
             for user in tiny_crap['users']:
                 self.accounts.update({user['handle']: user['nick']})
+        if tiny_crap['tc'] == 'joined':
+            self.handle = tiny_crap["self"]["handle"]
+
         if tiny_crap['tc'] == 'join':
             self.accounts.update({tiny_crap['handle']: tiny_crap['nick']})
         if tiny_crap['tc'] == 'quit':
@@ -168,7 +172,7 @@ async def start(executor, bot):
     asyncio.get_event_loop().run_in_executor(executor, bot.process_message_queue),
     await bot.connect()
 
-executor = concurrent.futures.ThreadPoolExecutor(max_workers=1,)
+executor = concurrent.futures.ThreadPoolExecutor(max_workers=3,)
 bot = QuantumBot()
 process_arg(sys.argv[1:], bot)
 asyncio.get_event_loop().run_until_complete(start(executor, bot))

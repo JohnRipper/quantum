@@ -6,21 +6,24 @@ import requests
 from lib.cog import Cog
 import json
 
+from lib.command import makeCommand, Command
+
 
 class Youtube(Cog):
 
     song_playing = False
     queue = []
+    @makeCommand(name="stop", description= "<name/url/id> - plays a song")
+    async def stop(self, c: Command):
+        self.yut_stop(c.raw_data[""])
 
-    async def yut_stop(self, data: dict):
-            self.song_playing = False
-            if self.queue:
-                await self.play_song(data=self.queue.pop())
+    @makeCommand(name="play", description= "<name/url/id> - plays a song")
+    async def play(self, c: Command):
+        # TODO check that this triggers on empty command
+        if c.message is None or c.message == '':
+            await self.bot.send_message("No url, id, or song name given.")
 
-    async def play_youtube(self, message):
-        if message is None or message == '':
-            return
-        url = 'https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=' + message + '&maxResults=1&key=AIzaSyCPQe4gGZuyVQ78zdqf9O5iEyfVLPaRwZg'
+        url = 'https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=' + c.message + '&maxResults=1&key=AIzaSyCPQe4gGZuyVQ78zdqf9O5iEyfVLPaRwZg'
         headers = {'referer': 'https://tinychat.com'}
         search_request = requests.get(url=url, headers=headers)
         search_result = json.loads(search_request.text)
@@ -40,6 +43,11 @@ class Youtube(Cog):
                     "offset":0,
                     "title":"test"}}
         await self.play_song(data=data)
+
+    async def yut_stop(self, data: dict):
+            self.song_playing = False
+            if self.queue:
+                await self.play_song(data=self.queue.pop())
 
     async def play_song(self, data):
         if self.song_playing:

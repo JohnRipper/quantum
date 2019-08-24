@@ -3,9 +3,11 @@
   "password": "",
   "nickname": "",
   "room": "",
+  "room_password": "",
   "prefixes": [".", ","],
   "modules": [
     "Log",
-    "Manage"
+    "Manage",
+
   ]
 }

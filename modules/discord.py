@@ -5,7 +5,7 @@ from lib.cog import Cog
 import json
 
 class Captcha(Cog):
-    # todo  moved from bot.py make compatible with new cog class
+
     def __init__(self, bot):
         super().__init__(bot)
         self.captcha_client = AnticaptchaClient(self.bot.settings['captcha_key'])

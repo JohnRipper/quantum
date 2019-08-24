@@ -24,15 +24,12 @@ class Log(Cog):
 
     async def userlist(self, data):
         self.logger.info(data)
-        return
 
     async def join(self, data):
         self.logger.info(data)
-        return
 
     async def quit(self, data):
         self.logger.info(data)
-        return
 
     async def ping(self, data):
         # NO
@@ -41,17 +38,30 @@ class Log(Cog):
 
     async def yut_stop(self, data):
         self.logger.info(data)
-        return
 
     async def msg(self, data):
         self.logger.info(data)
-        return
 
     async def captcha(self, data: dict):
         self.logger.info(data)
-        return
 
-    def pvtmsg(self, data):
+    async def pvtmsg(self, data):
         self.logger.info(data)
-        return
 
+    async def publish(self, data):
+        self.logger.info(data)
+
+    async def unpublish(self, data):
+        self.logger.info(data)
+
+    async def iceservers(self, data):
+        self.logger.info(data)
+
+    async def stream_connected(self, data):
+        self.logger.info(data)
+
+    async def stream_closed(self, data):
+        self.logger.info(data)
+
+    async def sdp(self, data):
+        self.logger.info(data)
