@@ -1,5 +1,3 @@
-import json
-
 from lib.cog import Cog
 from lib.command import makeCommand, Command
 from lib.constants import AppData
@@ -7,22 +5,37 @@ from lib.constants import AppData
 
 class Admin(Cog):
 
-    @makeCommand(name='cam', description='attempts to cam up')
+    @makeCommand(name='op', description='Remakes help file using file descriptions')
+    async def make_help(self, c: Command):
+        help = ""
+        help.join("Quantum bot help file\n")
+        help.join("\n")
+        # TODO remake help file and post somewhere
+        for module in self.bot.cogs:
+            help.join(f"{module.__name__}\n")
+            method_list = [func for func in dir(module) if callable(getattr(module, func))]
+            for method in method_list:
+                if hasattr(method, "_description"):
+                    print(getattr(module, "_description"))
+                    # todo get method name and aliases
+                    help.join(f"{getattr(module, '_name')} - {getattr(module, '_description')}\n")
+
+    @makeCommand(name='op', description='<account_name> makes op')
     async def make_op(self, c: Command):
         # TODO
         return
 
-    @makeCommand(name='cam', description='attempts to cam up')
+    @makeCommand(name='check_op', description='<account_name> check if has op status')
     async def check_op(self, c: Command):
         # TODO
         return
 
-    @makeCommand(name='cam', description='attempts to cam up')
+    @makeCommand(name='ban', description='<account> attempts to ban')
     async def make_ban_account(self, c: Command):
         # TODO
         return
 
-    @makeCommand(name='cam', description='attempts to cam up')
+    @makeCommand(name='check_ban', description='<account> checks ban')
     async def check_ban_account(self, c: Command):
         # TODO
         return
