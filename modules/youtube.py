@@ -32,7 +32,6 @@ class Youtube(Cog):
             url='https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=' + video_id + '&key=AIzaSyCPQe4gGZuyVQ78zdqf9O5iEyfVLPaRwZg',
             headers=headers)
         d = json.loads(details.text)
-        print(details.text)
         dur = isodate.parse_duration(d['items'][0]['contentDetails']['duration'])
         # add a few seconds to duration to help fight premature ejeculation.
         data = {"tc":"yut_play",

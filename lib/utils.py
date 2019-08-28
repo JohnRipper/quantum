@@ -20,3 +20,4 @@ def get_decorators(cls):
     node_iter.visit_FunctionDef = visit_FunctionDef
     node_iter.visit(ast.parse(inspect.getsource(target)))
     return decorators
+

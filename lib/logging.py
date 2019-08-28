@@ -1,5 +1,5 @@
 import sys
-from logging import getLoggerClass, addLevelName, setLoggerClass, NOTSET
+from logging import getLoggerClass, addLevelName, setLoggerClass
 import logging
 
 logging.basicConfig(
@@ -27,6 +27,8 @@ class QuantumLogger(getLoggerClass()):
 
     # custom levels
     CHAT = 50
+    WS_EVENT = 25
+    WS_SENT = 26
 
     # logger levels
     NOTSET = 0
@@ -34,25 +36,35 @@ class QuantumLogger(getLoggerClass()):
     INFO = 20
     WARNING = 30
     ERROR = 40
+    CRITICAL = 50
 
     _choices = ((CHAT, "chat"),
+                (WS_EVENT, "wsevent"),
+                (WS_SENT, "wssent"),
                 (DEBUG, "debug"),
                 (INFO, "info"),
                 (WARNING, "warning"),
                 (ERROR, "error"))
 
-    def __init__(self, name, level=NOTSET):
+    def __init__(self, name, level=20):
         super().__init__(name, level)
         addLevelName(self.CHAT, "CHAT")
+        addLevelName(self.WS_EVENT, "WS_EVENT")
+        addLevelName(self.WS_SENT, "WS_SENT")
         # default is info
-        self.set_level(self.INFO)
-
-
         self.addFilter(HourFilter())
 
     def chat(self, msg, *args, **kwargs):
         if self.isEnabledFor(self.CHAT):
             self._log(self.CHAT, msg, args, **kwargs)
+
+    def ws_event(self, msg, *args, **kwargs):
+        if self.isEnabledFor(self.WS_EVENT):
+            self._log(self.WS_EVENT, msg, args, **kwargs)
+
+    def ws_send(self, msg, *args, **kwargs):
+        if self.isEnabledFor(self.WS_SENT):
+            self._log(self.WS_SENT, msg, args, **kwargs)
 
     def remove_handlers(self):
         for handler in self.handlers:

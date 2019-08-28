@@ -1,5 +1,3 @@
-
-
 class Expires:
     # For api_paste_expire_date parameter
     NEVER = "N"
@@ -18,6 +16,12 @@ class Privacy:
     PUBLIC = 0
     UNLISTED = 0
     PRIVATE = 2
+
+
+class Option:
+    PASTE = "paste"
+    DELETE = "delete"
+    USERDETAILS = "userdetails"
 
 
 class Format:
