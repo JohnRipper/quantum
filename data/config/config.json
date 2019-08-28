@@ -3,22 +3,17 @@
   "password": "",
   "nickname": "",
   "room": "",
-  "room_password": "",
+  "captcha_key": "",
   "prefixes": [
     "#"
   ],
+  "gist_key": "",
+  "pastebin_key": "",
   "modules": [
-    {
-      "Log": {
-        "paste_bin": "add935fc29cc571a381480ab3828eaa0",
-        "gist": "add935fc29cc571a381480ab3828eaa0"
-      },
-      "Youtube": {},
-      "Captcha": {
-        "captcha_key": ""
-      },
-      "Debug": {},
-      "Webcam": {}
-    }
+    "Log",
+    "Youtube",
+    "Captcha",
+    "Debug",
+    "Webcam"
   ]
 }
