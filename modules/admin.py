@@ -1,6 +1,7 @@
 from lib.cog import Cog
 from lib.command import makeCommand, Command
 from lib.constants import AppData
+from lib.utils import string_in_file, append_string_in_file
 
 
 class Admin(Cog):
@@ -20,38 +21,33 @@ class Admin(Cog):
                     # todo get method name and aliases
                     help.join(f"{getattr(module, '_name')} - {getattr(module, '_description')}\n")
 
-    @makeCommand(name='op', description='<account_name> makes op')
-    async def make_op(self, c: Command):
-        # TODO
-        return
+        # use an api to post help file somewhere. pastebin/gist
+        # send results through socket.
 
-    @makeCommand(name='check_op', description='<account_name> check if has op status')
+    @makeCommand(name='op', description='<account> makes op')
+    async def make_op(self, c: Command):
+        if append_string_in_file(file="op", appended_string=c.message):
+            self.bot.send_message(f"{c.message} has been given op status")
+        else:
+            self.logger.debug(f"Could not make {c.message} an op")
+            self.bot.send_message("Command failed.")
+
+    @makeCommand(name='check_op', description='<account> check if has op status')
     async def check_op(self, c: Command):
-        # TODO
-        return
+        if string_in_file("op", c.message):
+            return True
+        return False
 
     @makeCommand(name='ban', description='<account> attempts to ban')
     async def make_ban_account(self, c: Command):
-        # TODO
-        return
+        if append_string_in_file(file="banned_accounts", appended_string=c.message):
+            self.bot.send_message(f"{c.message} has been given banned status")
+        else:
+            self.logger.debug(f"Could not add {c.message} banned list")
+            self.bot.send_message("Command failed.")
 
     @makeCommand(name='check_ban', description='<account> checks ban')
     async def check_ban_account(self, c: Command):
-        # TODO
-        return
-
-    def check_app_data(self, search_term: str, data_type: str):
-        """returns true if search term exists in file"""
-        if data_type not in AppData.ALL:
-            self.logger.error("Not a valid app data type!")
-            return False
-        # todo read file.
-        return False
-
-    def append_app_data(self, to_append: str, data_type: str):
-        """returns true if search term exists in file"""
-        if data_type not in AppData.ALL:
-            self.logger.error("Not a valid app data type!")
-            return False
-        # todo append to file.
+        if string_in_file("banned_accounts", c.message):
+            return True
         return False
