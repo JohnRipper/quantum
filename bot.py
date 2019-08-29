@@ -8,7 +8,7 @@ import json
 import re as regex
 import sys
 import time
-from lib.logging import QuantumLogger
+from lib.qlogging import QuantumLogger
 import importlib
 from lib.constants import SocketEvents
 from lib.command import Command
@@ -177,18 +177,14 @@ def process_arg(arg, b: QuantumBot):
             switcher = {
                 "i": bot.log.set_level(bot.log.INFO),
                 "c": bot.log.set_level(bot.log.CHAT),
+                "c": bot.log.set_level(bot.log.WEBSOCKET),
                 "d": bot.log.set_level(bot.log.DEBUG),
                 "w": bot.log.set_level(bot.log.WARNING),
                 "e": bot.log.set_level(bot.log.ERROR),
             }
-
-            # python 3.8
-            # if message := switcher.get(arg, "Invalid logging mode selected.") as error:
-            # bot.log.error(message)
-            # not 3.8
             if not switcher.get(arg, False):
                 bot.log.WARNING("Invalid logging mode selected.")
-                os.sys.exit()
+                bot.log.set_level(bot.log.INFO)
 
 
 async def start(executor, bot):
