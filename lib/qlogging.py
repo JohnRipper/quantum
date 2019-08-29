@@ -3,9 +3,7 @@ from logging import getLoggerClass, addLevelName, setLoggerClass
 import logging
 
 logging.basicConfig(
-    level=logging.INFO,
     format="%(threadName)10s %(name)18s: %(message)s",
-    filename="info.log"
 )
 
 
@@ -23,12 +21,11 @@ class HourFilter(logging.Filter):
 
 
 class QuantumLogger(getLoggerClass()):
-    # TODO play
-
     # custom levels
     CHAT = 50
+    WEBSOCKET = 25
     WS_EVENT = 25
-    WS_SENT = 26
+    WS_SENT = 25
 
     # logger levels
     NOTSET = 0
