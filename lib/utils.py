@@ -2,7 +2,7 @@ import ast
 import inspect
 import os
 
-from lib.logging import QuantumLogger
+from lib.qlogging import QuantumLogger
 
 logger = QuantumLogger("utils")
 
@@ -41,10 +41,10 @@ def string_in_file(file: str, search_term: str):
         return False
 
 
-def append_string_in_file(file: str, search_term: str):
+def append_string_in_file(file: str, appended_string: str):
     with open(f"./../data/app_data/{file}", "a") as data_file:
         data_file.seek(0, 2)
-        data_file.writelines(search_term)
+        data_file.writelines(appended_string)
         data_file.flush()
-        logger.debug(f"{search_term} added to {file} in /data/app_data")
+        logger.debug(f"{appended_string} added to {file} in /data/app_data")
         data_file.close()
