@@ -1,9 +1,9 @@
 import json
-
+from lib.utils import append_string_in_file, string_in_file
 
 class Account:
     def __init__(self, data):
-        data = json.loads(data)
+
         # "userlist" and "join" events use the same user object.
         # join has an additional tc key that can be ignored.
         self.achievement_url = data["achievement_url"]
@@ -20,17 +20,17 @@ class Account:
         self.username = data["username"]
 
     def is_op(self):
-        # TODO check /data/app_data/op
+        if string_in_file("op", self.username):
+            return True
         return False
 
     def is_banned(self):
-        # TODO check /data/app_data/banned_accounts
+        if string_in_file("banned_accounts", self.username):
+            return True
         return False
 
     def make_op(self):
-        # TODO check /data/app_data/op
-        return False
+        append_string_in_file(file="op", appended_string=self.username)
 
     def make_banned(self):
-        # TODO check /data/app_data/banned_accounts
-        return False
+        append_string_in_file(file="banned_accounts", appended_string=self.username)
