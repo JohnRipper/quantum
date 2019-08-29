@@ -3,6 +3,7 @@ class SocketEvents:
     CAPTCHA = 'captcha'
     USERLIST = 'userlist'
     JOIN = 'join'
+    JOINED = 'joined'
     QUIT = 'quit'
     PING = 'ping'
     YUT_STOP = 'yut_stop'
@@ -14,7 +15,7 @@ class SocketEvents:
     STREAM_CLOSED = 'stream_closed'
     SDP = 'sdp'
 
-    ALL = [MSG, CAPTCHA, USERLIST, JOIN, QUIT, PING, YUT_STOP,
+    ALL = [MSG, CAPTCHA, USERLIST, JOIN, JOINED, QUIT, PING, YUT_STOP,
            PVTMSG, ICESERVERS, PUBLISH, UNPUBLISH, STREAM_CONNECTED,
            STREAM_CLOSED, SDP]
 
