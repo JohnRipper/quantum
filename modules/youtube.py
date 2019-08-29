@@ -10,12 +10,18 @@ from lib.command import makeCommand, Command
 
 
 class Youtube(Cog):
-
     song_playing = False
     queue = []
+
     @makeCommand(name="stop", description= "<name/url/id> - plays a song")
     async def stop(self, c: Command):
-        self.yut_stop(c.raw_data[""])
+        # todo send youtube command.
+        return
+
+    @makeCommand(name="skip", description="<name/url/id> - plays a song")
+    async def skip(self, c: Command):
+        # todo next song
+        return
 
     @makeCommand(name="play", description= "<name/url/id> - plays a song")
     async def play(self, c: Command):
@@ -33,7 +39,7 @@ class Youtube(Cog):
             headers=headers)
         d = json.loads(details.text)
         dur = isodate.parse_duration(d['items'][0]['contentDetails']['duration'])
-        # add a few seconds to duration to help fight premature ejeculation.
+        # add a few seconds to duration to help fight premature ejaculation.
         data = {"tc":"yut_play",
                 "req":36,
                 "item":{
@@ -44,12 +50,19 @@ class Youtube(Cog):
         await self.play_song(data=data)
 
     async def yut_stop(self, data: dict):
-            self.song_playing = False
-            if self.queue:
-                await self.play_song(data=self.queue.pop())
+        self.song_playing = False
+        if self.queue:
+            await self.play_song(data=self.queue.pop())
+
+    async def yut_play(self, data: dict):
+        self.song_playing = True
 
     async def play_song(self, data):
         if self.song_playing:
             self.queue.append(data)
         else:
             await self.bot.ws.send(json.dumps(data))
+
+    async def play_next(self):
+        next_song = self.queue.pop()
+        await self.bot.ws.send(json.dumps(next_song))
