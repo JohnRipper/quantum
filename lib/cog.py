@@ -1,6 +1,6 @@
 import logging
 
-from lib.logging import QuantumLogger
+from lib.qlogging import QuantumLogger
 
 
 class Cog:
@@ -16,6 +16,10 @@ class Cog:
 
     async def join(self, data):
         # info on the room you just joined
+        return
+
+    async def joined(self, data):
+        # someone joined
         return
 
     async def quit(self, data):
