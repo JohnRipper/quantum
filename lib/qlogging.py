@@ -1,20 +1,17 @@
 import os
 import sys
-from logging import getLoggerClass, addLevelName, setLoggerClass
+from logging import LogRecord, getLoggerClass, addLevelName, setLoggerClass
 import logging
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
-class HourFilter(logging.Filter):
-    def filter(self, record):
+
+class ChatFilter(logging.Filter):
+    def filter(self, record: LogRecord):
         msg = record.msg
         if isinstance(msg, str):
-            # TODO creates a filter that only returns records from the past hour
-            # TODO Avoid intensive operations
-            # 'created': 1550671851.660067
-            # if record.created
-            # returns True if passes checks
-            return True
+            if record.levelno == QuantumLogger.CHAT:
+                return True
         return False
 
 
@@ -49,7 +46,6 @@ class QuantumLogger(getLoggerClass()):
         self.chat_handler_enabled = chat_handler
         # default is info
         # self.addFilter(HourFilter())
-        self.set_level(self.INFO)
 
     def chat(self, msg, *args, **kwargs):
         if self.isEnabledFor(self.CHAT):
@@ -73,10 +69,14 @@ class QuantumLogger(getLoggerClass()):
         return
 
     def add_chat_handler(self):
-        # TODO better log file names. ^^ see above ^^
-
-            handler = logging.FileHandler(filename=f"/data/logs/chat.log")
-            self.addHandler(handler)
+        # TODO better log file names. ^^ see above ^^ Also apply filter
+        file_name = f"data/logs/chat.log"
+        # create if doesnt exist
+        open(os.path.join(dir_path, "..", f'{file_name}'), 'a').close()
+        handler = logging.FileHandler(filename=file_name)
+        # apply filter
+        handler.addFilter(ChatFilter())
+        self.addHandler(handler)
 
     def setLevel(self, level: int):
         for chosen_level in self._choices:
