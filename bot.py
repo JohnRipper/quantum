@@ -187,8 +187,10 @@ def process_arg(arg, b: QuantumBot):
                 "e": bot.log.set_level(bot.log.ERROR),
             }
             if not switcher.get(arg, False):
-                bot.log.WARNING("Invalid logging mode selected.")
-                bot.log.set_level(bot.log.INFO)
+                bot.log.ERROR("Invalid logging mode selected.")
+                sys.exit()
+        else:
+            bot.log.set_level(bot.log.INFO)
 
 
 async def start(executor, bot):
