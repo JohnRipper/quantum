@@ -3,8 +3,6 @@ from lib.command import makeCommand, Command
 
 
 class Debug(Cog):
-    def __init__(self, bot):
-        super().__init__(bot)
 
     @makeCommand(name="people", description="get the current userlist")
     async def people(self,  c: Command):
