@@ -1,6 +1,5 @@
 from lib.cog import Cog
 from lib.command import makeCommand, Command
-import requests
 
 class Log(Cog):
 
@@ -9,7 +8,6 @@ class Log(Cog):
     #############################
     @makeCommand(name='printlog' , description='<-c> <-d> creates a copy of a Chat/debug log ')
     async def log_to_pastebin(self, c: Command):
-        # TODO create apis
         if c.message.startswith("-c"):
 
             await self.bot.send_message('not implemented for chat logs yet')
@@ -21,8 +19,6 @@ class Log(Cog):
     #############################
     # websocket events
     #############################
-    # TODO make pretty.
-
     async def userlist(self, data):
         self.logger.info(data)
 
@@ -65,4 +61,7 @@ class Log(Cog):
         self.logger.info(data)
 
     async def sdp(self, data):
+        self.logger.info(data)
+
+    async def closed(self, data):
         self.logger.info(data)
