@@ -11,22 +11,24 @@ class Welcome(Cog):
         super().__init__(bot)
 
     async def joined(self, data):
-        # {"achievement_url":"","avatar": ""
-        # ,"featured":false,
-        # "giftpoints":0,"handle":2704504,
-        # "lurker":false,"mod":false,"nick":"j"
-        # ,"owner":false,"session_id":"6a66866"
-        # ,"subscription":0,"username":""}
+        if data["self"]["owner"]:
+            await self.bot.send_message("I am the boss and im back")
+        else:
+            message = f"Hello everybody I am back. {data['self']['handle']}"
+            await self.bot.send_message(message)
+
+    async def join(self, data):
         if data["owner"]:
-            self.bot.send_message("Welcome back boss")
+            await self.bot.send_message("Welcome back boss")
         else:
             message = str(self.bot.settings["welcome_message"])
             message = message.replace("{nick}", data["nick"])
             message = message.replace("{username}", data["username"])
-            message = message.replace("{id}", data["handle"])
-            message = message.replace("{nick}", data["nick"])
-            self.bot.send_message(message)
+            message = message.replace("{id}", str(data["handle"]))
+            message = message.replace("{room}", self.bot.settings["room"])
+            await self.bot.send_message(message)
 
     async def quit(self, data):
-        # self.bot.send_message("has left the building")
+        # username = self.bot.handle_to_name["handle"]
+        # self.bot.send_message("{username}has left the building")
         return
