@@ -1,8 +1,4 @@
-from python_anticaptcha import NoCaptchaTaskProxylessTask, AnticatpchaException, AnticaptchaClient
-
 from lib.cog import Cog
-import json
-
 from lib.command import makeCommand, Command
 
 
