@@ -156,6 +156,10 @@ class QuantumBot:
         self.log.ws_send(message)
         await self.ws.send(message)
 
+    def bot_loop(self):
+        while self.is_running:
+            self.process_message_queue()
+
     def process_message_queue(self):
         while self.is_running:
             if len(self.message_queue) > 0:
@@ -168,7 +172,7 @@ def process_arg(arg, b: QuantumBot):
         opts, args = getopt.getopt(arg, "c:", ["config="])
     except getopt.GetoptError:
         print("Bot.py -c <configfile>")
-        print("-l <i,c,ws,d,w,e> - set logging level to [Info, Chat, Debug, Warn, Error]")
+        print("-l <i,c,ws,d,w,e> - set logging level to [Info, Chat,Websocket, Debug, Warn, Error]")
         sys.exit(2)
     # load default config if one is not specified.
     if "-c" not in opts:
@@ -194,7 +198,7 @@ def process_arg(arg, b: QuantumBot):
 
 
 async def start(executor, bot):
-    asyncio.get_event_loop().run_in_executor(executor, bot.process_message_queue),
+    asyncio.get_event_loop().run_in_executor(executor, bot.bot_loop),
     await bot.connect()
 
 
