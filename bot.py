@@ -1,6 +1,4 @@
 import getopt
-import logging
-import os
 import websockets
 import concurrent.futures
 import asyncio
@@ -184,18 +182,18 @@ def process_arg(arg, b: QuantumBot):
             b.load_config(arg)
         if opt == "-l":
             switcher = {
-                "i": bot.log.setLevel(bot.log.INFO),
-                "c": bot.log.setLevel(bot.log.CHAT),
-                "ws": bot.log.setLevel(bot.log.WEBSOCKET),
-                "d": bot.log.setLevel(bot.log.DEBUG),
-                "w": bot.log.setLevel(bot.log.WARNING),
-                "e": bot.log.setLevel(bot.log.ERROR)
+                "i": bot.log.set_level(bot.log.INFO),
+                "c": bot.log.set_level(bot.log.CHAT),
+                "ws": bot.log.set_level(bot.log.WEBSOCKET),
+                "d": bot.log.set_level(bot.log.DEBUG),
+                "w": bot.log.set_level(bot.log.WARNING),
+                "e": bot.log.set_level(bot.log.ERROR)
             }
             if not switcher.get(arg, False):
                 bot.log.ERROR("Invalid logging mode selected.")
                 sys.exit()
         else:
-            bot.log.setLevel(bot.log.INFO)
+            bot.log.set_level(bot.log.INFO)
 
 
 async def start(executor, bot):

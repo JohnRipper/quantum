@@ -44,6 +44,8 @@ class QuantumLogger(getLoggerClass()):
         addLevelName(self.WS_EVENT, "WS_EVENT")
         addLevelName(self.WS_SENT, "WS_SENT")
         self.chat_handler_enabled = chat_handler
+
+        self.set_level(level)
         # default is info
         # self.addFilter(HourFilter())
 
@@ -78,7 +80,7 @@ class QuantumLogger(getLoggerClass()):
         handler.addFilter(ChatFilter())
         self.addHandler(handler)
 
-    def setLevel(self, level: int):
+    def set_level(self, level: int):
         for chosen_level in self._choices:
             if level == chosen_level[0]:
                 super().__init__(level)
@@ -109,7 +111,6 @@ class QuantumLogger(getLoggerClass()):
                 handler2.setLevel(level)
                 handler2.setFormatter(formatter)
                 self.addHandler(handler2)
-
                 self.info(f"Logging level set to {chosen_level[1].upper()}")
                 return True
         # level was not set
