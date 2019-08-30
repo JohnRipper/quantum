@@ -83,7 +83,6 @@ class QuantumLogger(getLoggerClass()):
     def set_level(self, level: int):
         for chosen_level in self._choices:
             if level == chosen_level[0]:
-                super().__init__(level)
                 # reset handlers
                 self.remove_handlers()
                 # set formatter
