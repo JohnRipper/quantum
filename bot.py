@@ -1,4 +1,5 @@
 import getopt
+import logging
 import os
 import websockets
 import concurrent.futures
@@ -103,14 +104,17 @@ class QuantumBot:
         await self.ws.send(json.dumps({"tc": "password", "req": 2, "password": self.settings["room_password"]}))
 
     async def consumer(self, message: str):
+        self.log.ws_event(message)
         tiny_crap = json.loads(message)
+        if tiny_crap["tc"] == "captcha":
+            self.log.error(f"Captcha needed {tiny_crap}")
         if tiny_crap["tc"] == "userlist":
             for user in tiny_crap["users"]:
                 self.accounts.update({user["handle"]: Account(user)})
         if tiny_crap["tc"] == "joined":
             self.handle = tiny_crap["self"]["handle"]
         if tiny_crap["tc"] == "join":
-            self.accounts.update({tiny_crap["handle"]: Account(user)})
+            self.accounts.update({tiny_crap["handle"]: Account(tiny_crap)})
         if tiny_crap["tc"] == "quit":
             self.accounts.pop(tiny_crap["handle"])
         if tiny_crap["tc"] == "ping":
@@ -133,7 +137,7 @@ class QuantumBot:
                     await getattr(cog, t.lower())(tiny_crap)
         # check for unknown events
         if not found:
-            self.log.DEBUG(f"Unknown websocket event: {tiny_crap['tc']}")
+            self.log.DEBUG(f"Unknown websocket event: {tiny_crap}")
 
     def handle_to_name(self, handle):
         return self.accounts[handle].username
@@ -164,7 +168,7 @@ def process_arg(arg, b: QuantumBot):
         opts, args = getopt.getopt(arg, "c:", ["config="])
     except getopt.GetoptError:
         print("Bot.py -c <configfile>")
-        print("-l <i,c,d,w,e> - set logging level to [Info, Chat, Debug, Warn, Error]")
+        print("-l <i,c,ws,d,w,e> - set logging level to [Info, Chat, Debug, Warn, Error]")
         sys.exit(2)
     # load default config if one is not specified.
     if "-c" not in opts:
@@ -177,7 +181,7 @@ def process_arg(arg, b: QuantumBot):
             switcher = {
                 "i": bot.log.set_level(bot.log.INFO),
                 "c": bot.log.set_level(bot.log.CHAT),
-                "c": bot.log.set_level(bot.log.WEBSOCKET),
+                "ws": bot.log.set_level(bot.log.WEBSOCKET),
                 "d": bot.log.set_level(bot.log.DEBUG),
                 "w": bot.log.set_level(bot.log.WARNING),
                 "e": bot.log.set_level(bot.log.ERROR),
