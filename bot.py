@@ -120,6 +120,7 @@ class QuantumBot:
         if tiny_crap["tc"] == "ping":
             await self.pong()
         if tiny_crap["tc"] == "msg":
+            self.log.chat(str(self.handle_to_name(tiny_crap["handle"])) + ": " + str(tiny_crap["text"]))
             # check for a command, decorators are optional you can do it manually overriding msg in cog
             for prefix in self.settings["prefixes"]:
                 # if prefix match continue
