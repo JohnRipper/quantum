@@ -1,14 +1,12 @@
 import requests
-from python_anticaptcha import NoCaptchaTaskProxylessTask, AnticatpchaException, AnticaptchaClient
 
 from lib.cog import Cog
-import json
 
-class Captcha(Cog):
+
+class Discord(Cog):
 
     def __init__(self, bot):
         super().__init__(bot)
-        self.captcha_client = AnticaptchaClient(self.bot.settings['captcha_key'])
 
     async def send_discord(self, data):
         headers = {"Authorization": "Bot {}".format(self.bot.settings['discord']),
