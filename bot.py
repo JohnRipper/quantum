@@ -183,12 +183,12 @@ def process_arg(arg, b: QuantumBot):
             b.load_config(arg)
         if opt == "-l":
             switcher = {
-                "i": bot.log.set_level(bot.log.INFO),
-                "c": bot.log.set_level(bot.log.CHAT),
-                "ws": bot.log.set_level(bot.log.WEBSOCKET),
-                "d": bot.log.set_level(bot.log.DEBUG),
-                "w": bot.log.set_level(bot.log.WARNING),
-                "e": bot.log.set_level(bot.log.ERROR),
+                "i": bot.log.setLevel(bot.log.INFO),
+                "c": bot.log.setLevel(bot.log.CHAT),
+                "ws": bot.log.setLevel(bot.log.WEBSOCKET),
+                "d": bot.log.setLevel(bot.log.DEBUG),
+                "w": bot.log.setLevel(bot.log.WARNING),
+                "e": bot.log.setLevel(bot.log.ERROR)
             }
             if not switcher.get(arg, False):
                 bot.log.ERROR("Invalid logging mode selected.")
