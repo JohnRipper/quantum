@@ -1,11 +1,9 @@
+import os
 import sys
 from logging import getLoggerClass, addLevelName, setLoggerClass
 import logging
 
-logging.basicConfig(
-    format="%(threadName)10s %(name)18s: %(message)s",
-)
-
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
 class HourFilter(logging.Filter):
     def filter(self, record):
@@ -22,10 +20,10 @@ class HourFilter(logging.Filter):
 
 class QuantumLogger(getLoggerClass()):
     # custom levels
-    CHAT = 50
-    WEBSOCKET = 25
+    CHAT = 75
+    WEBSOCKET = 24
     WS_EVENT = 25
-    WS_SENT = 25
+    WS_SENT = 26
 
     # logger levels
     NOTSET = 0
@@ -48,8 +46,10 @@ class QuantumLogger(getLoggerClass()):
         addLevelName(self.CHAT, "CHAT")
         addLevelName(self.WS_EVENT, "WS_EVENT")
         addLevelName(self.WS_SENT, "WS_SENT")
+
         # default is info
-        self.addFilter(HourFilter())
+        # self.addFilter(HourFilter())
+        self.set_level(self.INFO)
 
     def chat(self, msg, *args, **kwargs):
         if self.isEnabledFor(self.CHAT):
@@ -83,17 +83,22 @@ class QuantumLogger(getLoggerClass()):
         for item in self._choices:
             if level == item[0]:
                 self.setLevel(level)
-                handler = logging.FileHandler(filename=f"/data/logs/{item[0]}.log")
+                file_name = f"data/logs/{item[1]}.log"
+                # create it if it doesnt exist
+
+                open(os.path.join(dir_path, "..", f'{file_name}'), 'a').close()
+
+                handler = logging.FileHandler(filename=file_name)
                 self.addHandler(handler)
-                # print chosen logging level to console.
-                handler2 = logging.StreamHandler(sys.stderr)
+                handler2 = logging.StreamHandler(sys.stdout)
+                handler2.setLevel(20)
+                formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+                handler2.setFormatter(formatter)
                 self.addHandler(handler2)
-                return f"Logging level set to {item[1].upper()}"
+                self.info(f"Logging level set to {item[1].upper()}")
+                return True
         # level was not set
         return False
 
 
 setLoggerClass(QuantumLogger)
-
-
-
