@@ -194,7 +194,7 @@ def process_arg(arg, b: QuantumBot):
                 bot.log.ERROR("Invalid logging mode selected.")
                 sys.exit()
         else:
-            bot.log.set_level(bot.log.INFO)
+            bot.log.setLevel(bot.log.INFO)
 
 
 async def start(executor, bot):
