@@ -88,12 +88,17 @@ class QuantumLogger(getLoggerClass()):
 
                 open(os.path.join(dir_path, "..", f'{file_name}'), 'a').close()
 
-                handler = logging.FileHandler(filename=file_name)
-                self.addHandler(handler)
-                handler2 = logging.StreamHandler(sys.stdout)
-                handler2.setLevel(20)
                 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+                handler = logging.FileHandler(filename=file_name)
+                handler.setLevel(level)
+                handler.setFormatter(formatter)
+                self.addHandler(handler)
+
+                handler2 = logging.StreamHandler(sys.stdout)
+                handler2.setLevel(level)
                 handler2.setFormatter(formatter)
+
                 self.addHandler(handler2)
                 self.info(f"Logging level set to {item[1].upper()}")
                 return True
