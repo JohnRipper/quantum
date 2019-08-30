@@ -78,10 +78,10 @@ class QuantumLogger(getLoggerClass()):
             handler = logging.FileHandler(filename=f"/data/logs/chat.log")
             self.addHandler(handler)
 
-    def set_level(self, level: int):
+    def setLevel(self, level: int):
         for chosen_level in self._choices:
             if level == chosen_level[0]:
-                self.setLevel(level)
+                super().__init__(level)
                 # reset handlers
                 self.remove_handlers()
                 # set formatter
