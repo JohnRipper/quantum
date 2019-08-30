@@ -10,6 +10,9 @@ class Cog:
         self.bot = bot
         self.commands = []
 
+    async def closed(self, data):
+        return
+
     async def userlist(self, data):
         # on room join, userlist is sent. dunno if sent other times.
         return
