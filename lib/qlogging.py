@@ -41,12 +41,12 @@ class QuantumLogger(getLoggerClass()):
                 (WARNING, "warning"),
                 (ERROR, "error"))
 
-    def __init__(self, name, level=20):
+    def __init__(self, name, level=20, chat_handler=True):
         super().__init__(name, level)
         addLevelName(self.CHAT, "CHAT")
         addLevelName(self.WS_EVENT, "WS_EVENT")
         addLevelName(self.WS_SENT, "WS_SENT")
-
+        self.chat_handler_enabled = chat_handler
         # default is info
         # self.addFilter(HourFilter())
         self.set_level(self.INFO)
@@ -74,33 +74,43 @@ class QuantumLogger(getLoggerClass()):
 
     def add_chat_handler(self):
         # TODO better log file names. ^^ see above ^^
-        if not self.level == self.CHAT:
+
             handler = logging.FileHandler(filename=f"/data/logs/chat.log")
-            handler.setLevel(self.CHAT)
             self.addHandler(handler)
 
     def set_level(self, level: int):
-        for item in self._choices:
-            if level == item[0]:
+        for chosen_level in self._choices:
+            if level == chosen_level[0]:
                 self.setLevel(level)
-                file_name = f"data/logs/{item[1]}.log"
-                # create it if it doesnt exist
-
-                open(os.path.join(dir_path, "..", f'{file_name}'), 'a').close()
-
+                # reset handlers
+                self.remove_handlers()
+                # set formatter
                 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-                handler = logging.FileHandler(filename=file_name)
-                handler.setLevel(level)
-                handler.setFormatter(formatter)
-                self.addHandler(handler)
+                # secondary log file that contains only messages.
+                if self.level == self.CHAT:
+                    self.add_chat_handler()
+                else:
+                    if self.chat_handler_enabled:
+                        self.add_chat_handler()
 
+                    # log to file
+                    file_name = f"data/logs/{chosen_level[1]}.log"
+                    # create if doesnt exist
+                    open(os.path.join(dir_path, "..", f'{file_name}'), 'a').close()
+
+                    handler = logging.FileHandler(filename=file_name)
+                    handler.setLevel(level)
+                    handler.setFormatter(formatter)
+                    self.addHandler(handler)
+
+                # log to the terminal.
                 handler2 = logging.StreamHandler(sys.stdout)
                 handler2.setLevel(level)
                 handler2.setFormatter(formatter)
-
                 self.addHandler(handler2)
-                self.info(f"Logging level set to {item[1].upper()}")
+
+                self.info(f"Logging level set to {chosen_level[1].upper()}")
                 return True
         # level was not set
         return False
