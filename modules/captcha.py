@@ -13,7 +13,7 @@ class Captcha(Cog):
         await self.do_captcha(key=data['key'])
 
     async def do_captcha(self, key: str):
-        self.logger.info('captcha required, attempting to solve.')
+        self.logger.info('attempting to solve captcha.')
         try:
             task = NoCaptchaTaskProxylessTask(
                 'https://www.tinychat.com/room/%s' % self.bot.settings['room'], key)
