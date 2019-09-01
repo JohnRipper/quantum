@@ -176,7 +176,7 @@ class QuantumBot:
                 time.sleep(self.rate_limit_seconds)
 
 
-def process_arg(arg, b: QuantumBot):
+def process_arg(b: QuantumBot):
     parser = argparse.ArgumentParser(
         description=__doc__,
         epilog="It's reommended you copy the default.toml and rename before adding changing"
@@ -216,5 +216,5 @@ async def start(executor, bot):
 
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=3, )
 bot = QuantumBot()
-process_arg(sys.argv[1:], bot)
+process_arg(bot)
 asyncio.get_event_loop().run_until_complete(start(executor, bot))

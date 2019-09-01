@@ -14,7 +14,7 @@ class Youtube(Cog):
         super().__init__(bot)
         self.apikey = "AIzaSyCPQe4gGZuyVQ78zdqf9O5iEyfVLPaRwZg"
         self.headers = {"referer": "https://tinychat.com"}
-        self.settings = self.bot.settings["modules"]["youtube"]
+        self.settings = self.bot.settings["module"]["youtube"]
         if len(self.settings["key"]) > 0:
             self.apikey = self.settings["key"]
             self.headers = None
@@ -49,7 +49,7 @@ class Youtube(Cog):
             await self.bot.send_message("No url, id, or song name given.")
 
         query = requests.utils.quote(c.message)
-        search_requests = requests.get(
+        search_request = requests.get(
             url = self.search_url.format(self.base_url, query, self.apikey),
             headers = self.headers
         )
@@ -69,9 +69,9 @@ class Youtube(Cog):
             "req":36,
             "item": {
                 "id":video_id,
-                "duration":int(dur.total_seconds()) + 3,
+                "duration":int(duration.total_seconds()) + 3,
                 "offset":0,
-                "title": "{} — [{}]".format(title,channeltitle)
+                "title": "{} — [{}]".format(title, channel)
             }
         }
         await self.play_song(data=data)
