@@ -45,9 +45,8 @@ class QuantumLogger(getLoggerClass()):
         addLevelName(self.WS_SENT, "WS_SENT")
         self.chat_handler_enabled = chat_handler
 
-        self.set_level(level)
         # default is info
-        # self.addFilter(HourFilter())
+        self.set_level(level)
 
     def chat(self, msg, *args, **kwargs):
         if self.isEnabledFor(self.CHAT):
@@ -82,6 +81,7 @@ class QuantumLogger(getLoggerClass()):
 
     def set_level(self, level: int):
         for chosen_level in self._choices:
+            self.setLevel(level)
             if level == chosen_level[0]:
                 # reset handlers
                 self.remove_handlers()

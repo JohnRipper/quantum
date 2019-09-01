@@ -146,9 +146,8 @@ class QuantumBot:
                     await getattr(cog, t.lower())(tiny_crap)
         # check for unknown events
         if not found:
-            # TypeError: int not callable, QuantumLogger.DEBUG == int
-            # self.log.DEBUG(f"Unknown websocket event: {tiny_crap}")
-            print(f"Unkown websocket event: {tiny_crap}")
+            self.log.debug(f"Unknown websocket event: {tiny_crap}")
+            print(f"Unknown websocket event: {tiny_crap}")
 
     def handle_to_name(self, handle):
         return self.accounts[handle].username
@@ -201,16 +200,17 @@ def process_arg(b: QuantumBot):
         b.load_config(args.config)
     if args.logging:
         switcher = {
-            "i": bot.log.set_level(bot.log.INFO),
-            "c": bot.log.set_level(bot.log.CHAT),
-            "ws": bot.log.set_level(bot.log.WEBSOCKET),
-            "d": bot.log.set_level(bot.log.DEBUG),
-            "w": bot.log.set_level(bot.log.WARNING),
-            "e": bot.log.set_level(bot.log.ERROR)
+            "i": QuantumLogger.INFO,
+            "c": QuantumLogger.CHAT,
+            "ws": QuantumLogger.WEBSOCKET,
+            "d": QuantumLogger.DEBUG,
+            "w": QuantumLogger.WARNING,
+            "e": QuantumLogger.ERROR
         }
-        if not switcher.get(args.logging, False):
-            bot.log.ERROR("Invalid logging mode selected.")
+        if switcher.get(args.logging, False):
+            bot.log.set_level(switcher.get(args.logging, False))
             sys.exit()
+
 
 async def start(executor, bot):
     asyncio.get_event_loop().run_in_executor(executor, bot.bot_loop),

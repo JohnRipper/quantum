@@ -37,7 +37,7 @@ class Log(Cog):
         self.logger.info(data)
 
     async def msg(self, data):
-        self.logger.chat(data)
+        self.logger.chat(str(self.bot.handle_to_name(data["handle"])) + ": " + str(data["text"]))
 
     async def captcha(self, data: dict):
         self.logger.info(data)

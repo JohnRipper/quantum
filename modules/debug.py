@@ -4,6 +4,9 @@ from lib.command import makeCommand, Command
 
 class Debug(Cog):
 
+    #############################
+    # Commands
+    #############################
     @makeCommand(name="people", description="get the current userlist")
     async def people(self,  c: Command):
         await self.bot.send_message(self.bot.accounts.__str__())

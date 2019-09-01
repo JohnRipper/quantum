@@ -4,6 +4,7 @@ import requests
 from lib.cog import Cog
 from lib.command import makeCommand, Command
 
+
 class Urban(Cog):
     def __init__(self, bot):
         super().__init__(bot)

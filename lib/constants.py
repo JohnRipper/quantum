@@ -23,7 +23,16 @@ class SocketEvents:
 
 class AppData:
     BADWORDS = "bad_words"
-    OP = "bad_words"
+    OP = "op"
     BANNED_ACCOUNTs = "banned_accounts"
     HELP_MESSAGE = "help_message"
     ALL = (BADWORDS, OP, BANNED_ACCOUNTs, HELP_MESSAGE)
+
+
+class Role:
+    NONE = -1
+    NO_ACCOUNT = 0
+    GUEST = 10
+    OP = 50
+    MOD = 75
+    OWNER = 100

@@ -3,6 +3,7 @@ from python_anticaptcha import NoCaptchaTaskProxylessTask, AnticatpchaException,
 from lib.cog import Cog
 import json
 
+
 class Captcha(Cog):
     def __init__(self, bot):
         super().__init__(bot)
@@ -20,7 +21,7 @@ class Captcha(Cog):
         self.logger.info("attempting to solve captcha.")
         try:
             task = NoCaptchaTaskProxylessTask(
-                self.tcurl.format(self.bot.settings["room"]["roomname"], key)
+                self.tcurl.format(self.bot.settings["room"]["roomname"], key))
             job = self.captcha_client.createTask(task)
             job.join()
             payload = {
