@@ -1,0 +1,7 @@
+*.pyc
+# local toml
+dev.toml
+# vim swps
+*.swp
+# emacs tmp
+.#*
