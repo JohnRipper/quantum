@@ -1,4 +1,5 @@
 *.pyc
+*.log
 # local toml
 dev.toml
 # vim swps
