@@ -49,7 +49,7 @@ class QuantumBot:
         config = Path(config)
         print(config)
         if config.exists():
-            self.settings = tomlkit.loads(_config.read_text())
+            self.settings = tomlkit.loads(config.read_text())
             self.load_cogs()
         else:
             sys.exit("Configuration not found, exiting.")
