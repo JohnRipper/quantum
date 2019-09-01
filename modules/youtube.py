@@ -48,7 +48,7 @@ class Youtube(Cog):
         if c.message is None or c.message == '':
             await self.bot.send_message("No url, id, or song name given.")
 
-        query = requests.utils.quote(c.message):
+        query = requests.utils.quote(c.message)
         search_requests = requests.get(
             url = self.search_url.format(self.base_url, query, self.apikey),
             headers = self.headers
