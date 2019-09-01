@@ -12,7 +12,7 @@ prefixes = [ ".", "," ]
 # TODO probably put this in a readme
 welcome_message = "Welcome to {room}, {nick}. {username} | {handle}"
 modules = [
-# "AutoUrl"
+# "AutoUrl" # WARNING: autourl can and will leak your IP address
 # "Captcha"
 # "Debug"
 # "Discord"
