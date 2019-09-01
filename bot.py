@@ -1,4 +1,7 @@
-import getopt
+"""
+Quantum is a modular bot for Tinychat,
+edit the .toml file to enable/disable modules
+"""
 import websockets
 import concurrent.futures
 import asyncio
@@ -8,6 +11,7 @@ import re as regex
 import sys
 import time
 import importlib
+import argparse
 from pathlib import Path
 
 import tomlkit
@@ -41,22 +45,14 @@ class QuantumBot:
                         asyncio.ensure_future(getattr(cog, cmd.command)(cmd), loop=asyncio.get_event_loop())
                         # await getattr(cog, cmd.command)(cmd)
 
-    def load_config(self, config=None):
-        default_config = Path("default.toml")
-        possible_config = Path(config) if config != None else None
-        if config is None and default_config.exists():
-            print("Using default configuration file.")
-            _config = default_config
-        elif possible_config and possible_config.exists():
-            # TODO suffix check? Some weirdo might try to load it as an ini
-            # or maybe save an ini, which would be read fine. I think.
-            # if possible_config.suffix == ".toml":
-            _config = possible_config
+    def load_config(self, config):
+        config = Path(config)
+        print(config)
+        if config.exists():
+            self.settings = tomlkit.loads(_config.read_text())
+            self.load_cogs()
         else:
-            sys.exit("Configuration file not found, exiting.")
-        # pathlib's read_text is about the same as readlines() but closes
-        self.settings = tomlkit.loads(_config.read_text())
-        self.load_cogs()
+            sys.exit("Configuration not found, exiting.")
 
     def load_cogs(self):
         for cog_name in self.settings["bot"]["modules"]:
@@ -181,39 +177,42 @@ class QuantumBot:
 
 
 def process_arg(arg, b: QuantumBot):
-    try:
-        opts, args = getopt.getopt(arg, "c:", ["config="])
-    except getopt.GetoptError:
-        print("Bot.py -c <configfile>")
-        print("-l <i,c,ws,d,w,e> - set logging level to [Info, Chat,Websocket, Debug, Warn, Error]")
-        sys.exit(2)
-    # load default config if one is not specified.
-    if "-c" not in opts:
-        b.load_config()
-
-    for opt, arg in opts:
-        if opt == "-c":
-            b.load_config(arg)
-        if opt == "-l":
-            switcher = {
-                "i": bot.log.set_level(bot.log.INFO),
-                "c": bot.log.set_level(bot.log.CHAT),
-                "ws": bot.log.set_level(bot.log.WEBSOCKET),
-                "d": bot.log.set_level(bot.log.DEBUG),
-                "w": bot.log.set_level(bot.log.WARNING),
-                "e": bot.log.set_level(bot.log.ERROR)
-            }
-            if not switcher.get(arg, False):
-                bot.log.ERROR("Invalid logging mode selected.")
-                sys.exit()
-        else:
-            bot.log.set_level(bot.log.INFO)
-
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        epilog="It's reommended you copy the default.toml and rename before adding changing"
+    )
+    # Define args
+    # TODO maybe add a few for more for roomname etc
+    parser.add_argument(
+        "--config", "-c",
+        help="path to configuation file",
+        default="default.toml"
+    )
+    parser.add_argument(
+        "--logging", "-l",
+        choices=["i","c","ws","d","w","e"],
+        help="set logging to Info, Chat, WebSocket, Debug, Warn, Error; respectively",
+        default="i"
+    )
+    args = parser.parse_args()
+    if args.config:
+        b.load_config(args.config)
+    if args.logging:
+        switcher = {
+            "i": bot.log.set_level(bot.log.INFO),
+            "c": bot.log.set_level(bot.log.CHAT),
+            "ws": bot.log.set_level(bot.log.WEBSOCKET),
+            "d": bot.log.set_level(bot.log.DEBUG),
+            "w": bot.log.set_level(bot.log.WARNING),
+            "e": bot.log.set_level(bot.log.ERROR)
+        }
+        if not switcher.get(args.logging, False):
+            bot.log.ERROR("Invalid logging mode selected.")
+            sys.exit()
 
 async def start(executor, bot):
     asyncio.get_event_loop().run_in_executor(executor, bot.bot_loop),
     await bot.connect()
-
 
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=3, )
 bot = QuantumBot()
