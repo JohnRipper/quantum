@@ -209,7 +209,6 @@ def process_arg(b: QuantumBot):
         }
         if switcher.get(args.logging, False):
             bot.log.set_level(switcher.get(args.logging, False))
-            sys.exit()
 
 
 async def start(executor, bot):
