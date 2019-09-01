@@ -7,8 +7,12 @@ import json
 import re as regex
 import sys
 import time
-from lib.qlogging import QuantumLogger
 import importlib
+from pathlib import Path
+
+import tomlkit
+
+from lib.qlogging import QuantumLogger
 from lib.constants import SocketEvents
 from lib.command import Command
 from lib.account import Account
@@ -38,14 +42,24 @@ class QuantumBot:
                         # await getattr(cog, cmd.command)(cmd)
 
     def load_config(self, config=None):
-        if config is None:
-            config = "config"
-        with open(f"./data/config/{config}.json") as data_file:
-            self.settings = json.load(data_file)
+        default_config = Path("default.toml")
+        possible_config = Path(config) if config != None else None
+        if config is None and default_config.exists():
+            print("Using default configuration file.")
+            _config = default_config
+        elif possible_config and possible_config.exists():
+            # TODO suffix check? Some weirdo might try to load it as an ini
+            # or maybe save an ini, which would be read fine. I think.
+            # if possible_config.suffix == ".toml":
+            _config = possible_config
+        else:
+            sys.exit("Configuration file not found, exiting.")
+        # pathlib's read_text is about the same as readlines() but closes
+        self.settings = tomlkit.loads(_config.read_text())
         self.load_cogs()
 
     def load_cogs(self):
-        for cog_name in self.settings["modules"]:
+        for cog_name in self.settings["bot"]["modules"]:
             self.add_cog(cog_name)
 
     async def connect(self):
@@ -55,8 +69,8 @@ class QuantumBot:
         csrf = regex.search(string=data.text,
                             pattern=r'<meta name="csrf-token" id="csrf-token" content="[a-zA-Z0-9]*').group(0)[49:]
         s_data = {
-            "login_username": self.settings["username"],
-            "login_password": self.settings["password"],
+            "login_username": self.settings["account"]["username"],
+            "login_password": self.settings["account"]["password"],
             "remember": "1",
             "_token": csrf
         }
@@ -66,8 +80,8 @@ class QuantumBot:
             "Accept-Language": "en-US,en;q=0.5",
             "Accept-Encoding": "gzip, deflate, br",
         }
-        token = r.get(url="https://tinychat.com/api/v1.0/room/token/" + self.settings["room"])
-        rtc_version_data = r.get(url="https://tinychat.com/room/" + self.settings["room"])
+        token = r.get(url="https://tinychat.com/api/v1.0/room/token/" + self.settings["room"]["roomname"])
+        rtc_version_data = r.get(url="https://tinychat.com/room/" + self.settings["room"]["roomname"])
         rtc_version = regex.search(string=rtc_version_data.text, pattern=r'href="/webrtc/[0-9-.]*').group(0)[13:]
 
         payload = {
@@ -75,8 +89,8 @@ class QuantumBot:
             "req": 1,
             "useragent": "tinychat-client-webrtc-chrome_linux x86_64-" + rtc_version,
             "token": token.json()["result"],
-            "room": self.settings["room"],
-            "nick": self.settings["nickname"]
+            "room": self.settings["room"]["roomname"],
+            "nick": self.settings["room"]["nickname"]
         }
 
         r.close()
@@ -99,7 +113,7 @@ class QuantumBot:
                 self.cogs.remove(cog)
 
     async def password(self):
-        await self.ws.send(json.dumps({"tc": "password", "req": 2, "password": self.settings["room_password"]}))
+        await self.ws.send(json.dumps({"tc": "password", "req": 2, "password": self.settings["room"]["password"]}))
 
     async def consumer(self, message: str):
         self.log.ws_event(message)
@@ -120,7 +134,7 @@ class QuantumBot:
         if tiny_crap["tc"] == "msg":
             self.log.chat(str(self.handle_to_name(tiny_crap["handle"])) + ": " + str(tiny_crap["text"]))
             # check for a command, decorators are optional you can do it manually overriding msg in cog
-            for prefix in self.settings["prefixes"]:
+            for prefix in self.settings["bot"]["prefixes"]:
                 # if prefix match continue
                 if tiny_crap["text"].startswith(prefix):
                     await self.attempt_command(Command(data=tiny_crap))

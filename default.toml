@@ -1,0 +1,43 @@
+[account]
+username = ""
+password = ""
+
+[room]
+nickname = ""
+roomname = ""
+password = ""
+
+[bot]
+prefixes = [ ".", "," ]
+# TODO probably put this in a readme
+welcome_message = "Welcome to {room}, {nick}. {username} | {handle}"
+modules = [
+# "AutoUrl"
+# "Captcha"
+# "Debug"
+# "Discord"
+  "Log",
+# "Urban",
+# "Webcam",
+# "WunderTime",
+# "Youtube",
+]
+[module.autourl]
+exclusion_char = "!"
+
+[module.captcha]
+key = ""
+
+[module.youtube]
+key = ""
+
+[discord]
+# channel not needed for webhook
+channel = ""
+# TODO explain these bits
+use_webhook = false
+webhook_url = ""
+include_avatar = false
+bot.username = "TC Notification"
+bot.icon_url = ""
+

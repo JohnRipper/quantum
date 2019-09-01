@@ -21,12 +21,14 @@ class Welcome(Cog):
         if data["owner"]:
             await self.bot.send_message("Welcome back boss")
         else:
-            message = str(self.bot.settings["welcome_message"])
-            message = message.replace("{nick}", data["nick"])
-            message = message.replace("{username}", data["username"])
-            message = message.replace("{id}", str(data["handle"]))
-            message = message.replace("{room}", self.bot.settings["room"])
-            await self.bot.send_message(message)
+            message = self.bot.settings["bot"]["welcome_message"]
+            if len(message) >= 1: # account for a blank space
+                message = message.format(**data)
+                if "{room}" in message:
+                    message = message.format(room=self.bot.settings["room"]["roomname"])
+                await self.bot.send_message(message)
+            else:
+                pass
 
     async def quit(self, data):
         # username = self.bot.handle_to_name["handle"]
