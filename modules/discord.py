@@ -31,7 +31,7 @@ class Discord(Cog):
         # format the message from config
         tosend = self.settings["bot"]["message"].format(username=username, nick=nick)
         msg["attachments"][0]["text"] = tosend
-        msg["attachements"][0]["image_url"] = avatar
+        msg["attachments"][0]["image_url"] = avatar
         # people forget this shit all the time
         if "/slack" not in self.webhook_url:
             self.webhook_url += "/slack"
@@ -46,7 +46,7 @@ class Discord(Cog):
                         data={"content": data})
 
     async def join(self, data):
-        if self.discord["use_webhook"] is False:
+        if self.settings["use_webhook"] is False:
             await self.send_discord(
                 "{} has joined the room with account: {}".format(
                     data["nick"],
