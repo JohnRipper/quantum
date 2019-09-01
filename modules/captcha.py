@@ -6,9 +6,10 @@ import json
 class Captcha(Cog):
     def __init__(self, bot):
         super().__init__(bot)
+        self.settings = self.bot.settings["module"]["captcha"]
         self.tcurl = "https://tinychat.com/room/{}"
         self.captcha_client = AnticaptchaClient(
-            self.bot.settings["module.captcha"]["key"]
+            self.settings["key"]
         )
 
     # captcha is a websocket event.

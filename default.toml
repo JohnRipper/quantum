@@ -23,6 +23,7 @@ modules = [
 # "Youtube",
 ]
 [module.autourl]
+pattern = "http.\S+"
 exclusion_char = "!"
 
 [module.captcha]

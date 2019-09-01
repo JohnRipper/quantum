@@ -9,6 +9,9 @@ from lib.command import makeCommand, Command
 class Welcome(Cog):
     def __init__(self, bot):
         super().__init__(bot)
+        self.roomname = self.bot.settings["room"]["roomname"]
+        self.settings = self.bot.settings["module"]["welcome"]
+        self.welcome_message = self.settings["message"]
 
     async def joined(self, data):
         if data["self"]["owner"]:
@@ -17,15 +20,16 @@ class Welcome(Cog):
             message = f"Hello everybody I am back. {data['self']['handle']}"
             await self.bot.send_message(message)
 
+    # TODO option to disable for guests/non-mods or something
     async def join(self, data):
         if data["owner"]:
             await self.bot.send_message("Welcome back boss")
         else:
-            message = self.bot.settings["bot"]["welcome_message"]
+            message = self.welcome_message
             if len(message) >= 1: # account for a blank space
                 message = message.format(**data)
                 if "{room}" in message:
-                    message = message.format(room=self.bot.settings["room"]["roomname"])
+                    message = message.format(room=self.roomname)
                 await self.bot.send_message(message)
             else:
                 pass

@@ -18,18 +18,18 @@ class Discord(Cog):
 
     def __init__(self, bot):
         super().__init__(bot)
-        self.discord = self.bot.settings["discord"]
-        self.webhook_url = self.discord["webhook_url"]
+        self.settings = self.bot.settings["discord"]
+        self.webhook_url = self.settings["webhook_url"]
 
     async def send_webhook(self, nick, username, avatar):
         msg = WEBHOOK_FMT
-        if self.discord["include_avatar"] is False:
+        if self.settings["include_avatar"] is False:
             avatar = None
-        for key,_ in self.discord["bot"].items():
+        for key,_ in self.settings["bot"].items():
             # should be able to map this
-            msg[key] = self.discord["bot"][key]
+            msg[key] = self.settings["bot"][key]
         # format the message from config
-        tosend = self.discord["bot"]["message"].format(username=username, nick=nick)
+        tosend = self.settings["bot"]["message"].format(username=username, nick=nick)
         msg["attachments"][0]["text"] = tosend
         msg["attachements"][0]["image_url"] = avatar
         # people forget this shit all the time
@@ -38,10 +38,10 @@ class Discord(Cog):
         requests.post(self.webhook_url, json.dumps(msg))
 
     async def send_discord(self, data):
-        if len(self.discord["channel"]) > 0:
-            headers = {"Authorization": "Bot {}".format(self.discord["channel"]),
+        if len(self.settings["channel"]) > 0:
+            headers = {"Authorization": "Bot {}".format(self.settings["channel"]),
                     "Content-Type": "application/x-www-form-urlencoded"}
-            requests.post(url="https://discordapp.com/api/v6/channels/{}/messages%".format(self.discord_channel),
+            requests.post(url="https://discordapp.com/api/v6/channels/{}/messages%".format(self.settings["channel"]),
                         headers=headers,
                         data={"content": data})
 

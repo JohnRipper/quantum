@@ -8,8 +8,9 @@ from lib.cog import Cog
 class AutoUrl(Cog):
     def __init__(self, bot):
         super().__init__(bot)
-        self.pattern = "http.\S+"
-        self.exclusion_char = self.bot.settings["module"]["autourl"]["exclusion_char"]
+        self.settings = self.bot.settings["module"]["autourl"]
+        self.pattern = self.settings["pattern"]
+        self.exclusion_char = self.settings["exclusion_char"]
 
     async def msg(self, data):
         msg = data["text"]
