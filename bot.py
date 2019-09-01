@@ -146,7 +146,9 @@ class QuantumBot:
                     await getattr(cog, t.lower())(tiny_crap)
         # check for unknown events
         if not found:
-            self.log.DEBUG(f"Unknown websocket event: {tiny_crap}")
+            # TypeError: int not callable, QuantumLogger.DEBUG == int
+            # self.log.DEBUG(f"Unknown websocket event: {tiny_crap}")
+            print(f"Unkown websocket event: {tiny_crap}")
 
     def handle_to_name(self, handle):
         return self.accounts[handle].username
