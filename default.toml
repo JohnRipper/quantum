@@ -40,6 +40,6 @@ use_webhook = false
 webhook_url = ""
 include_avatar = false
 bot.username = "TC Notification"
-bot.icon_url = ""
+bot.icon_url = "https://quad.pe/e/rurVj3widl.png"
 bot.message = "**{nick}** has joined the room with the account **{username}**"
 
