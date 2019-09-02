@@ -1,4 +1,7 @@
-import getopt
+"""
+Quantum is a modular bot for Tinychat,
+edit the .toml file to enable/disable modules
+"""
 import websockets
 import concurrent.futures
 import asyncio
@@ -7,8 +10,13 @@ import json
 import re as regex
 import sys
 import time
-from lib.qlogging import QuantumLogger
 import importlib
+import argparse
+from pathlib import Path
+
+import tomlkit
+
+from lib.qlogging import QuantumLogger
 from lib.constants import SocketEvents
 from lib.command import Command
 from lib.account import Account
@@ -37,15 +45,17 @@ class QuantumBot:
                         asyncio.ensure_future(getattr(cog, cmd.command)(cmd), loop=asyncio.get_event_loop())
                         # await getattr(cog, cmd.command)(cmd)
 
-    def load_config(self, config=None):
-        if config is None:
-            config = "config"
-        with open(f"./data/config/{config}.json") as data_file:
-            self.settings = json.load(data_file)
-        self.load_cogs()
+    def load_config(self, config):
+        config = Path(config)
+        print(config)
+        if config.exists():
+            self.settings = tomlkit.loads(config.read_text())
+            self.load_cogs()
+        else:
+            sys.exit("Configuration not found, exiting.")
 
     def load_cogs(self):
-        for cog_name in self.settings["modules"]:
+        for cog_name in self.settings["bot"]["modules"]:
             self.add_cog(cog_name)
 
     async def connect(self):
@@ -55,8 +65,8 @@ class QuantumBot:
         csrf = regex.search(string=data.text,
                             pattern=r'<meta name="csrf-token" id="csrf-token" content="[a-zA-Z0-9]*').group(0)[49:]
         s_data = {
-            "login_username": self.settings["username"],
-            "login_password": self.settings["password"],
+            "login_username": self.settings["account"]["username"],
+            "login_password": self.settings["account"]["password"],
             "remember": "1",
             "_token": csrf
         }
@@ -66,8 +76,8 @@ class QuantumBot:
             "Accept-Language": "en-US,en;q=0.5",
             "Accept-Encoding": "gzip, deflate, br",
         }
-        token = r.get(url="https://tinychat.com/api/v1.0/room/token/" + self.settings["room"])
-        rtc_version_data = r.get(url="https://tinychat.com/room/" + self.settings["room"])
+        token = r.get(url="https://tinychat.com/api/v1.0/room/token/" + self.settings["room"]["roomname"])
+        rtc_version_data = r.get(url="https://tinychat.com/room/" + self.settings["room"]["roomname"])
         rtc_version = regex.search(string=rtc_version_data.text, pattern=r'href="/webrtc/[0-9-.]*').group(0)[13:]
 
         payload = {
@@ -75,8 +85,8 @@ class QuantumBot:
             "req": 1,
             "useragent": "tinychat-client-webrtc-chrome_linux x86_64-" + rtc_version,
             "token": token.json()["result"],
-            "room": self.settings["room"],
-            "nick": self.settings["nickname"]
+            "room": self.settings["room"]["roomname"],
+            "nick": self.settings["room"]["nickname"]
         }
 
         r.close()
@@ -99,7 +109,7 @@ class QuantumBot:
                 self.cogs.remove(cog)
 
     async def password(self):
-        await self.ws.send(json.dumps({"tc": "password", "req": 2, "password": self.settings["room_password"]}))
+        await self.ws.send(json.dumps({"tc": "password", "req": 2, "password": self.settings["room"]["password"]}))
 
     async def consumer(self, message: str):
         self.log.ws_event(message)
@@ -120,7 +130,7 @@ class QuantumBot:
         if tiny_crap["tc"] == "msg":
             self.log.chat(str(self.handle_to_name(tiny_crap["handle"])) + ": " + str(tiny_crap["text"]))
             # check for a command, decorators are optional you can do it manually overriding msg in cog
-            for prefix in self.settings["prefixes"]:
+            for prefix in self.settings["bot"]["prefixes"]:
                 # if prefix match continue
                 if tiny_crap["text"].startswith(prefix):
                     await self.attempt_command(Command(data=tiny_crap))
@@ -136,7 +146,9 @@ class QuantumBot:
                     await getattr(cog, t.lower())(tiny_crap)
         # check for unknown events
         if not found:
-            self.log.DEBUG(f"Unknown websocket event: {tiny_crap}")
+            # TypeError: int not callable, QuantumLogger.DEBUG == int
+            # self.log.DEBUG(f"Unknown websocket event: {tiny_crap}")
+            print(f"Unkown websocket event: {tiny_crap}")
 
     def handle_to_name(self, handle):
         return self.accounts[handle].username
@@ -166,42 +178,45 @@ class QuantumBot:
                 time.sleep(self.rate_limit_seconds)
 
 
-def process_arg(arg, b: QuantumBot):
-    try:
-        opts, args = getopt.getopt(arg, "c:", ["config="])
-    except getopt.GetoptError:
-        print("Bot.py -c <configfile>")
-        print("-l <i,c,ws,d,w,e> - set logging level to [Info, Chat,Websocket, Debug, Warn, Error]")
-        sys.exit(2)
-    # load default config if one is not specified.
-    if "-c" not in opts:
-        b.load_config()
-
-    for opt, arg in opts:
-        if opt == "-c":
-            b.load_config(arg)
-        if opt == "-l":
-            switcher = {
-                "i": bot.log.set_level(bot.log.INFO),
-                "c": bot.log.set_level(bot.log.CHAT),
-                "ws": bot.log.set_level(bot.log.WEBSOCKET),
-                "d": bot.log.set_level(bot.log.DEBUG),
-                "w": bot.log.set_level(bot.log.WARNING),
-                "e": bot.log.set_level(bot.log.ERROR)
-            }
-            if not switcher.get(arg, False):
-                bot.log.ERROR("Invalid logging mode selected.")
-                sys.exit()
-        else:
-            bot.log.set_level(bot.log.INFO)
-
+def process_arg(b: QuantumBot):
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        epilog="It's reommended you copy the default.toml and rename before adding changing"
+    )
+    # Define args
+    # TODO maybe add a few for more for roomname etc
+    parser.add_argument(
+        "--config", "-c",
+        help="path to configuation file",
+        default="default.toml"
+    )
+    parser.add_argument(
+        "--logging", "-l",
+        choices=["i","c","ws","d","w","e"],
+        help="set logging to Info, Chat, WebSocket, Debug, Warn, Error; respectively",
+        default="i"
+    )
+    args = parser.parse_args()
+    if args.config:
+        b.load_config(args.config)
+    if args.logging:
+        switcher = {
+            "i": bot.log.set_level(bot.log.INFO),
+            "c": bot.log.set_level(bot.log.CHAT),
+            "ws": bot.log.set_level(bot.log.WEBSOCKET),
+            "d": bot.log.set_level(bot.log.DEBUG),
+            "w": bot.log.set_level(bot.log.WARNING),
+            "e": bot.log.set_level(bot.log.ERROR)
+        }
+        if not switcher.get(args.logging, False):
+            bot.log.ERROR("Invalid logging mode selected.")
+            sys.exit()
 
 async def start(executor, bot):
     asyncio.get_event_loop().run_in_executor(executor, bot.bot_loop),
     await bot.connect()
 
-
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=3, )
 bot = QuantumBot()
-process_arg(sys.argv[1:], bot)
+process_arg(bot)
 asyncio.get_event_loop().run_until_complete(start(executor, bot))
