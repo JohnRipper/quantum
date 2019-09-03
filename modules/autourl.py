@@ -11,7 +11,6 @@ class AutoUrl(Cog):
         self.settings = self.bot.settings["module"]["autourl"]
         self.pattern = self.settings["pattern"]
         self.exclusion_char = self.settings["exclusion_char"]
-        self.temp_ignore = "jumpin"
 
     async def msg(self, data):
         msg = data["text"]
@@ -19,8 +18,10 @@ class AutoUrl(Cog):
         # workaround for youtube playing
         if data["handle"] == self.bot.handle or re.match("\A.?play", msg):
             pass
-        elif self.temp_ignore in msg:
-            pass
+        elif len(self.settings["ignores"]) >= 1:
+            for ignore in self.settings["ignores"]:
+                if re.match(ignore, msg):
+                    pass
         elif msg.startswith(self.exclusion_char) or len(match) == 0:
             pass
         else:
@@ -30,7 +31,7 @@ class AutoUrl(Cog):
                 # TODO maybe split at "/" to do like [URL Title] - site.url
                 # maybe handle 404, meh
                 try:
-                    title = soup.title.string
+                    title = soup.title.string.strip()
                 except AttributeError:
                     pass
                 else:

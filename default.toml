@@ -27,6 +27,10 @@ modules = [
 [module.autourl]
 pattern = "http.\\S+"
 exclusion_char = "!"
+# things in url to ignore, regular expressions supported
+ignores = [
+"tinychat.com"
+]
 
 [module.captcha]
 key = ""
