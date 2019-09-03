@@ -10,13 +10,15 @@ def makeCommand(name, description, cls=None, **attrs):
 
 
 class Command:
-    def __init__(self, data):
+    def __init__(self, data, bot):
         self.raw_data = data
         self.command, self.message = f'{data["text"]}{" "}'.split(' ', 1)
         self.command = self.command[1:]
+        self.sender = bot.handle_name(data["handle"])
+        self._bot = bot
 
+    def send_message(self, message: str):
+        self._bot.send_message(message)
 
-
-
-
-
+    def send_private_message(self, message: str):
+        return
