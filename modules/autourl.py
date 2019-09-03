@@ -15,7 +15,8 @@ class AutoUrl(Cog):
     async def msg(self, data):
         msg = data["text"]
         match = re.findall(self.pattern, msg)
-        if data["handle"] == self.bot.handle:
+        # workaround for youtube playing
+        if data["handle"] == self.bot.handle or re.match("\W?play", msg):
             pass
         elif msg.startswith(self.exclusion_char) or len(match) == 0:
             pass
