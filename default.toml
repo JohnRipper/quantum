@@ -40,7 +40,7 @@ key = ""
 
 [module.movie]
 key = ""
-include_url = True
+include_url = true
 
 [module.youtube]
 key = ""
