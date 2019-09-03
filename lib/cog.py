@@ -1,5 +1,3 @@
-import logging
-
 from lib.qlogging import QuantumLogger
 
 
