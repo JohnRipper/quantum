@@ -22,6 +22,8 @@ class QuantumLogger(getLoggerClass()):
     WS_EVENT = 25
     WS_SENT = 26
 
+    PING = 28
+    PONG = 28
     # logger levels
     NOTSET = 0
     DEBUG = 10
@@ -34,6 +36,8 @@ class QuantumLogger(getLoggerClass()):
                 (WS_EVENT, "wsevent"),
                 (WS_SENT, "wssent"),
                 (DEBUG, "debug"),
+                (PING, "ping"),
+                (PONG, "pong"),
                 (INFO, "info"),
                 (WARNING, "warning"),
                 (ERROR, "error"))
@@ -43,10 +47,20 @@ class QuantumLogger(getLoggerClass()):
         addLevelName(self.CHAT, "CHAT")
         addLevelName(self.WS_EVENT, "WS_EVENT")
         addLevelName(self.WS_SENT, "WS_SENT")
+        addLevelName(self.PING, "PING")
+        addLevelName(self.PONG, "PONG")
         self.chat_handler_enabled = chat_handler
 
         # default is info
         self.set_level(level)
+
+    def ping(self, msg, *args, **kwargs):
+        if self.isEnabledFor(self.PING):
+            self._log(self.CHAT, msg, args, **kwargs)
+
+    def pong(self, msg, *args, **kwargs):
+        if self.isEnabledFor(self.PONG):
+            self._log(self.CHAT, msg, args, **kwargs)
 
     def chat(self, msg, *args, **kwargs):
         if self.isEnabledFor(self.CHAT):
