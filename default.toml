@@ -16,6 +16,7 @@ modules = [
 # "Captcha",
 # "Debug",
 # "Discord",
+# "Food2fook",
   "Log",
 # "Urban",
 # "Webcam",
@@ -27,6 +28,9 @@ pattern = "http.\\S+"
 exclusion_char = "!"
 
 [module.captcha]
+key = ""
+
+[module.food2fork]
 key = ""
 
 [module.youtube]
