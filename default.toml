@@ -16,7 +16,9 @@ modules = [
 # "Captcha",
 # "Debug",
 # "Discord",
+# "Food2fook",
   "Log",
+# "Movie", # UNTESTED
 # "Urban",
 # "Webcam",
 # "WunderTime",
@@ -25,9 +27,20 @@ modules = [
 [module.autourl]
 pattern = "http.\\S+"
 exclusion_char = "!"
+# things in url to ignore, regular expressions supported
+ignores = [
+"tinychat.com"
+]
 
 [module.captcha]
 key = ""
+
+[module.food2fork]
+key = ""
+
+[module.movie]
+key = ""
+include_url = true
 
 [module.youtube]
 key = ""

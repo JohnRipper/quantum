@@ -15,18 +15,35 @@ class AutoUrl(Cog):
     async def msg(self, data):
         msg = data["text"]
         match = re.findall(self.pattern, msg)
-        if msg.startswith(self.exclusion_char) or len(match) == 0:
+        # workaround for youtube playing
+        print(self.settings["ignores"])
+        if data["handle"] == self.bot.handle or re.match("\A.?play", msg):
+            pass
+        elif msg.startswith(self.exclusion_char) or len(match) == 0:
             pass
         else:
-            res = requests.get(match[0])
-            soup = bs4(requests.get(match[0]).text, "html.parser")
-            if soup != None:
-                # TODO maybe split at "/" to do like [URL Title] - site.url
-                # maybe handle 404, meh
-                try:
-                    title = soup.title.string
-                except AttributeError:
-                    pass
-                else:
-                    await self.bot.send_message(f"[{soup.title.string}]")
+            if self.ignore_msg(match[0]) is False:
+                await self.bot.send_message(await self.get_title(match[0]))
+
+    def ignore_msg(self, msg):
+        print(msg)
+        if len(self.settings["ignores"]) >= 1:
+            for ignore in self.settings["ignores"]:
+                if bool(re.findall(ignore, msg)):
+                    return True
+            else:
+                return False
+        else:
+            return False
+
+    async def get_title(self, url):
+        res = requests.get(url)
+        soup = bs4(res.text, "html.parser")
+        if soup != None:
+            try:
+                title = soup.title.string
+            except AttributeError as error:
+                self.bot.warning(erro)
+            else:
+                return title.strip()
 
