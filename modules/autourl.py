@@ -16,7 +16,7 @@ class AutoUrl(Cog):
         msg = data["text"]
         match = re.findall(self.pattern, msg)
         # workaround for youtube playing
-        if data["handle"] == self.bot.handle or re.match("\W?play", msg):
+        if data["handle"] == self.bot.handle or re.match("\A.?play", msg):
             pass
         elif msg.startswith(self.exclusion_char) or len(match) == 0:
             pass
@@ -31,5 +31,5 @@ class AutoUrl(Cog):
                 except AttributeError:
                     pass
                 else:
-                    await self.bot.send_message(f"[{soup.title.string}]")
+                    await self.bot.send_message(f"{soup.title.string}")
 
