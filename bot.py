@@ -24,7 +24,7 @@ from lib.account import Account
 
 class QuantumBot:
     def __init__(self):
-        self.ws = None
+        self._ws = None
         self.accounts = {}
         self.log = QuantumLogger("quantum")
         self.settings = None
@@ -33,6 +33,7 @@ class QuantumBot:
         self.is_running = False
         self.cogs = []
         self.handle = 0
+        self.req = 0
 
     async def attempt_command(self, cmd: Command):
         for cog in self.cogs:
@@ -41,13 +42,15 @@ class QuantumBot:
                 f = getattr(cog, cmd.command)
                 # commands only run if they were given the _command meta data from the @command decorator
                 if hasattr(f, "_command"):
-                    if f._command:
-                        asyncio.ensure_future(getattr(cog, cmd.command)(cmd), loop=asyncio.get_event_loop())
-                        # await getattr(cog, cmd.command)(cmd)
+                    asyncio.ensure_future(getattr(cog, cmd.command)(cmd), loop=asyncio.get_event_loop())
+                    # await getattr(cog, cmd.command)(cmd)
+
+    def get_req(self):
+        self.req += 1
+        return self.req
 
     def load_config(self, config):
         config = Path(config)
-        print(config)
         if config.exists():
             self.settings = tomlkit.loads(config.read_text())
             self.load_cogs()
@@ -82,7 +85,7 @@ class QuantumBot:
 
         payload = {
             "tc": "join",
-            "req": 1,
+            "req": self.get_req(),
             "useragent": "tinychat-client-webrtc-chrome_linux x86_64-" + rtc_version,
             "token": token.json()["result"],
             "room": self.settings["room"]["roomname"],
@@ -91,10 +94,10 @@ class QuantumBot:
 
         r.close()
         async with websockets.connect(uri=token.json()["endpoint"], subprotocols=["tc"],
-                                      extra_headers=headers, timeout=600, origin="https://tinychat.com") as self.ws:
-            await self.ws.send(json.dumps(payload))
+                                      extra_headers=headers, timeout=600, origin="https://tinychat.com") as self._ws:
+            await self.wsend(json.dumps(payload))
             self.is_running = True
-            async for message in self.ws:
+            async for message in self._ws:
                 await self.consumer(message)
 
     def add_cog(self, cog_name: str):
@@ -109,13 +112,15 @@ class QuantumBot:
                 self.cogs.remove(cog)
 
     async def password(self):
-        await self.ws.send(json.dumps({"tc": "password", "req": 2, "password": self.settings["room"]["password"]}))
+        # do not log.
+        await self._ws.send(
+            json.dumps({"tc": "password", "req": self.get_req(), "password": self.settings["room"]["password"]}))
 
     async def consumer(self, message: str):
         self.log.ws_event(message)
         tiny_crap = json.loads(message)
         if tiny_crap["tc"] == "captcha":
-            self.log.error(f"Captcha needed {tiny_crap}")
+            self.log.warning(f"Captcha needed {tiny_crap}")
         if tiny_crap["tc"] == "userlist":
             for user in tiny_crap["users"]:
                 self.accounts.update({user["handle"]: Account(user)})
@@ -153,28 +158,28 @@ class QuantumBot:
         return self.accounts[handle].username
 
     async def send_message(self, message):
-        if len(self.message_queue) > 0:
-            self.message_queue.append(message)
-        else:
-            await self.ws.send(json.dumps({"tc": "msg", "req": 1, "text": message}))
+        self.message_queue.append(message)
 
     async def pong(self):
-        await self.ws.send(json.dumps({"tc": "pong", "req": 1}))
+        data = json.dumps({"tc": "pong", "req": self.get_req()})
+        self.log.pong(data)
+        await self._ws.send(data)
 
     async def wsend(self, message: str):
         """websocket send wrapper"""
         self.log.ws_send(message)
-        await self.ws.send(message)
+        await self._ws.send(message)
 
     def bot_loop(self):
         while self.is_running:
             self.process_message_queue()
+            # possible to add a loop to modules? idk what ppl would use it for.
 
     def process_message_queue(self):
         while self.is_running:
             if len(self.message_queue) > 0:
                 self.send_message(message=self.message_queue.pop(0))
-                time.sleep(self.rate_limit_seconds)
+                await asyncio.sleep(self.rate_limit_seconds)
 
 
 def process_arg(b: QuantumBot):
@@ -191,7 +196,7 @@ def process_arg(b: QuantumBot):
     )
     parser.add_argument(
         "--logging", "-l",
-        choices=["i","c","ws","d","w","e"],
+        choices=["i", "c", "ws", "d", "w", "e"],
         help="set logging to Info, Chat, WebSocket, Debug, Warn, Error; respectively",
         default="i"
     )
