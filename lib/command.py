@@ -14,7 +14,7 @@ class Command:
         self.raw_data = data
         self.command, self.message = f'{data["text"]}{" "}'.split(' ', 1)
         self.command = self.command[1:]
-        self.sender = bot.handle_name(data["handle"])
+        self.sender = bot.handle_to_name(data["handle"])
         self._bot = bot
 
     def send_message(self, message: str):
