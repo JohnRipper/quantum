@@ -37,13 +37,15 @@ class QuantumBot:
 
     async def attempt_command(self, cmd: Command):
         for cog in self.cogs:
+            # self.logger.debug(dir(cog))
             # todo make it work for aliases
             if hasattr(cog, cmd.command):
                 f = getattr(cog, cmd.command)
                 # commands only run if they were given the _command meta data from the @command decorator
                 if hasattr(f, "_command"):
-                    asyncio.ensure_future(getattr(cog, cmd.command)(cmd), loop=asyncio.get_event_loop())
-                    # await getattr(cog, cmd.command)(cmd)
+                    if f._command:
+                        asyncio.ensure_future(getattr(cog, cmd.command)(cmd), loop=asyncio.get_event_loop())
+                        # await getattr(cog, cmd.command)(cmd)
 
     def get_req(self):
         self.req += 1
@@ -59,6 +61,7 @@ class QuantumBot:
 
     def load_cogs(self):
         for cog_name in self.settings["bot"]["modules"]:
+            self.log.info(f"adding cog: {cog_name}")
             self.add_cog(cog_name)
 
     async def connect(self):
@@ -138,7 +141,7 @@ class QuantumBot:
             for prefix in self.settings["bot"]["prefixes"]:
                 # if prefix match continue
                 if tiny_crap["text"].startswith(prefix):
-                    await self.attempt_command(Command(data=tiny_crap))
+                    await self.attempt_command(Command(data=tiny_crap, bot=self))
         if tiny_crap["tc"] == "password":
             await self.password()
 
@@ -158,6 +161,8 @@ class QuantumBot:
         return self.accounts[handle].username
 
     async def send_message(self, message):
+        # todo split messages into multiple parts if it exceeds limit
+        # 128 characters, 255 bytes
         self.message_queue.append(message)
 
     async def pong(self):
@@ -171,15 +176,15 @@ class QuantumBot:
         await self._ws.send(message)
 
     def bot_loop(self):
-        while self.is_running:
-            self.process_message_queue()
-            # possible to add a loop to modules? idk what ppl would use it for.
+        while True:
+            if self.is_running:
+                self.process_message_queue()
+                # possible to add a loop to modules? idk what ppl would use it for.
 
     def process_message_queue(self):
-        while self.is_running:
-            if len(self.message_queue) > 0:
-                self.send_message(message=self.message_queue.pop(0))
-                await asyncio.sleep(self.rate_limit_seconds)
+        if len(self.message_queue) > 0:
+            asyncio.run(self.wsend(json.dumps({"tc": "msg", "req": 1, "text": self.message_queue.pop(0)})))
+            asyncio.run(asyncio.sleep(self.rate_limit_seconds))
 
 
 def process_arg(b: QuantumBot):
@@ -217,7 +222,7 @@ def process_arg(b: QuantumBot):
 
 
 async def start(executor, bot):
-    asyncio.get_event_loop().run_in_executor(executor, bot.bot_loop),
+    asyncio.get_event_loop().run_in_executor(executor, bot.bot_loop)
     await bot.connect()
 
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=3, )
