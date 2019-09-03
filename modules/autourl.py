@@ -11,12 +11,15 @@ class AutoUrl(Cog):
         self.settings = self.bot.settings["module"]["autourl"]
         self.pattern = self.settings["pattern"]
         self.exclusion_char = self.settings["exclusion_char"]
+        self.temp_ignore = "jumpin"
 
     async def msg(self, data):
         msg = data["text"]
         match = re.findall(self.pattern, msg)
         # workaround for youtube playing
         if data["handle"] == self.bot.handle or re.match("\A.?play", msg):
+            pass
+        elif self.temp_ignore in msg:
             pass
         elif msg.startswith(self.exclusion_char) or len(match) == 0:
             pass
