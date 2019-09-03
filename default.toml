@@ -18,6 +18,7 @@ modules = [
 # "Discord",
 # "Food2fook",
   "Log",
+# "Movie", # UNTESTED
 # "Urban",
 # "Webcam",
 # "WunderTime",
@@ -32,6 +33,10 @@ key = ""
 
 [module.food2fork]
 key = ""
+
+[module.movie]
+key = ""
+include_url = True
 
 [module.youtube]
 key = ""
