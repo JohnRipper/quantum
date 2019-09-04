@@ -17,6 +17,7 @@ python3 bot.py
 - `extras` (modules) - bs4 anticaptcha isodate
 - `webcam` (win32 may not work) - aioice aiortc
 - `all` - all of the above
+
 The above are available via `./install.sh $opt`
 
 ## Configuration
