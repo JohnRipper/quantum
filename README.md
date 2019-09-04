@@ -13,7 +13,12 @@ python3 bot.py
 <sub><sub><sub><sub>maybe</sub></sub></sub></sub>
 
 ### Requirements
-**TODO**
+- `base` - websockets requests tomlkit
+- `extras` (modules) - bs4 anticaptcha isodate
+- `webcam` (win32 may not work) - aioice aiortc
+- `all` - all of the above
+The above are available via `./install.sh $opt`
+
 ## Configuration
 This document is divided into sections the same as [`default.toml`](https://github.com/JohnRipper/quantum/blob/master/default.toml)
 ### Account
