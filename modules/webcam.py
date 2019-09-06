@@ -64,7 +64,7 @@ class Webcam(Cog):
                     await self.connection.connect()
 
     async def stream_closed(self, data):
-        await self.bot.ws.send(json.dumps({"tc": "subscribe", "req": 2, "handle": data['handle']}))
+        await self.bot.wsend(json.dumps({"tc": "subscribe", "req": 2, "handle": data['handle']}))
 
     async def stream_connected(self, data):
         return
@@ -75,17 +75,17 @@ class Webcam(Cog):
     @makeCommand(name='cam' , description='attempts to cam up')
     async def cam(self, c: Command):
         # get ice servers
-        await self.bot.ws.send(json.dumps({"tc": "getice", "req": 216}))
+        await self.bot.wsend(json.dumps({"tc": "getice", "req": 216}))
 
     #############################
     # class methods
     #############################
 
     async def close_stream(self, handle_id):
-        self.bot.ws.send(json.dumps({"tc":"stream_close","req":215,"handle": handle_id}))
+        self.bot.wsend(json.dumps({"tc":"stream_close","req":215,"handle": handle_id}))
 
     async def subscribe(self, handle_id):
-        await self.bot.ws.send(json.dumps({"tc":"subscribe","req":2,"handle": handle_id}))
+        await self.bot.wsend(json.dumps({"tc":"subscribe","req":2,"handle": handle_id}))
 
     async def offer(self, data):
         s_server = data['servers'][0].split(":")
@@ -110,7 +110,7 @@ class Webcam(Cog):
             "handle": 0
         }
         print(data)
-        await self.bot.ws.send(json.dumps(data))
+        await self.bot.wsend(json.dumps(data))
         for c in self.connection.local_candidates:
             data = {
                 "tc": "trickle",
@@ -119,10 +119,10 @@ class Webcam(Cog):
                 "handle": self.bot.handle
             }
             print(data)
-            await self.bot.ws.send(json.dumps(data))
+            await self.bot.wsend(json.dumps(data))
 
     async def get_ice(self):
-        await self.bot.ws.send(json.dumps({'tc': 'getice', 'req':1}))
+        await self.bot.wsend(json.dumps({'tc': 'getice', 'req':1}))
 
 
 
