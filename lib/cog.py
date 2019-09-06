@@ -6,9 +6,9 @@ class Cog:
         self.name = self.__class__.__name__
         self.logger = QuantumLogger(self.name)
         self.bot = bot
-        self.commands = []
 
     async def closed(self, data):
+        # tc closed the connnection
         return
 
     async def userlist(self, data):
