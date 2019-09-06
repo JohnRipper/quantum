@@ -30,9 +30,11 @@ class AppData:
 
 
 class Role:
-    NONE = -1
-    NO_ACCOUNT = 0
-    GUEST = 10
-    OP = 50
-    MOD = 75
-    OWNER = 100
+    NONE = ("none", -1)
+    NO_ACCOUNT = ("no_account", 0)
+    # guest is logged in
+    GUEST = ("account", 10)
+    OP = ("op", 50)
+    MOD = ("mod", 75)
+    OWNER = ("owner", 100)
+    ALL_VALID = (NO_ACCOUNT, GUEST, OP, MOD, OWNER)
