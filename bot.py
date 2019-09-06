@@ -20,7 +20,9 @@ from lib.constants import SocketEvents
 from lib.command import Command
 from lib.account import Account
 from importlib import reload
+from lib.utils import get_commit_sha1
 
+__version__ = get_commit_sha1()
 
 class QuantumBot:
     def __init__(self):
@@ -28,6 +30,7 @@ class QuantumBot:
         self.accounts = {}
         self.log = QuantumLogger("quantum")
         self.settings = None
+        self.version = __version__
         self.rate_limit_seconds = 1
         self.message_queue = []
         self.is_running = False
@@ -80,7 +83,7 @@ class QuantumBot:
                             pattern=r'<meta name="csrf-token" id="csrf-token" content="[a-zA-Z0-9]*').group(0)[49:]
         s_data = {
             "login_username": self.settings["account"]["username"],
-            "login_password": self.settings["account"]["password"].__str__(),
+            "login_password": self.settings["account"]["password"],
             "remember": "1",
             "_token": csrf
         }
@@ -167,6 +170,9 @@ class QuantumBot:
                 if tiny_crap["text"].startswith(prefix):
                     await self.attempt_command(
                         Command(data=tiny_crap, bot=self, account=self.accounts[tiny_crap["handle"]]))
+                    await self.attempt_command(Command(data=tiny_crap, bot=self))
+                if prefix + "version" in tiny_crap["text"]:
+                    await self.send_message(f"Quantum version: {self.version}")
         if tiny_crap["tc"] == "password":
             await self.password()
 
@@ -214,10 +220,12 @@ class QuantumBot:
 def process_arg(b: QuantumBot):
     parser = argparse.ArgumentParser(
         description=__doc__,
-        epilog="It's reommended you copy the default.toml and rename before adding changing"
+        epilog=f"Quantum {__version__}"
     )
-    # Define args
-    # TODO maybe add a few for more for roomname etc
+    parser.add_argument(
+        "--version", "-v",
+        action="version", version=f"Quantum {__version__}"
+    )
     parser.add_argument(
         "--config", "-c",
         help="path to configuation file",

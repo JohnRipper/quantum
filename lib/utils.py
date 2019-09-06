@@ -2,6 +2,8 @@ import ast
 import inspect
 import os
 
+import requests
+
 from lib.qlogging import QuantumLogger
 
 logger = QuantumLogger("utils")
@@ -52,3 +54,11 @@ def append_string_in_file(file: str, appended_string: str):
         data_file.flush()
         data_file.close()
         logger.debug(f"{appended_string} added to {file} in /data/app_data")
+
+def get_commit_sha1():
+    req = requests.get("https://api.github.com/repos/JohnRipper/quantum/commits")
+    if req.status_code == 200:
+        # like github
+        sha = req.json()[0]["sha"][:7]
+        return(sha)
+
