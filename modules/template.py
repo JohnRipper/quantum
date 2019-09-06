@@ -1,5 +1,6 @@
+from lib.account import Role
 from lib.cog import Cog
-from lib.command import Command, makeCommand
+from lib.command import Command, makeCommand, restrictTo
 
 
 class Template(Cog):
@@ -18,28 +19,32 @@ class Template(Cog):
         reverse = message[::-1]
         self.logger.info(f"Reverse {message}:{reverse}")
         return reverse
-
     #############################
     # Commands
     #############################
-    @makeCommand(name="echo", description="<cog_name> reloads a cog")
+    @makeCommand(name="echo", description="<message> echos a message)")
     async def echo(self, c: Command):
         # how to access the raw data from webocket
         # print(c.raw_data)
-
-        # how to get Sender name
-        sender = c.sender
-
         # how to use logger
         self.logger.info(f"Echo: {c.message}")
 
         # how to send a message
-        await c.send_message(f"Echo {sender}:{c.message}")
+        await c.send_message(f"Echo ")
 
-    @makeCommand(name="reverse", description="<cog_name> reloads a cog")
+    @makeCommand(name="amiop", description="<cog_name> reloads a cog")
+    @restrictTo(role=Role.OP)
+    async def amiop(self, c: Command):
+        # restricted to op and up
+
+        # how to send a message
+        await c.send_message(f"Yes have access sir. you are {c.account.role[0]}.")
+
+    @makeCommand(name="reverse", description="<message> reverses a message")
     async def reverse(self, c: Command):
-        reversed_message = self.reverse_string(c.message)
-        await c.send_message(f"{reversed_message}")
+        rm = self.reverse_string(c.message)
+        if rm:
+            await c.send_message(f"{c.account.nick}{rm}")
 
     #############################
     # Events
