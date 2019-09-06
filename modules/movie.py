@@ -1,8 +1,8 @@
-import re
 import requests
 
 from lib.cog import Cog
 from lib.command import makeCommand, Command
+
 
 class Movie(Cog):
     def __init__(self, bot):
@@ -15,7 +15,7 @@ class Movie(Cog):
         # works abit like youtube, general search then another request using an ID
         self.id_url = "https://api.themoviedb.org/3/{media_type}/{id}/{apikey}"
 
-    @makeComamnd(name="imdb", description="<query> search The Movie Db for TV and movies")
+    @makeCommand(name="imdb", description="<query> search The Movie Db for TV and movies")
     async def search(self, query):
         # TODO handle years in query
         query = requests.utils.quote(query)
