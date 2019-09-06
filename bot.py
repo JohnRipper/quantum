@@ -9,7 +9,6 @@ import requests
 import json
 import re as regex
 import sys
-import time
 import importlib
 import argparse
 from pathlib import Path
@@ -20,6 +19,7 @@ from lib.qlogging import QuantumLogger
 from lib.constants import SocketEvents
 from lib.command import Command
 from lib.account import Account
+from importlib import reload
 
 
 class QuantumBot:
@@ -34,6 +34,7 @@ class QuantumBot:
         self.cogs = []
         self.handle = 0
         self.req = 0
+        self.modules = []
 
     async def attempt_command(self, cmd: Command):
         for cog in self.cogs:
@@ -43,9 +44,13 @@ class QuantumBot:
                 f = getattr(cog, cmd.command)
                 # commands only run if they were given the _command meta data from the @command decorator
                 if hasattr(f, "_command"):
-                    if f._command:
+                    # check for role.
+                    if hasattr(f, "role"):
+                        if cmd.account.role[1] >= f.role[1]:
+                            asyncio.ensure_future(getattr(cog, cmd.command)(cmd), loop=asyncio.get_event_loop())
+                    # Anybody can use command.
+                    else:
                         asyncio.ensure_future(getattr(cog, cmd.command)(cmd), loop=asyncio.get_event_loop())
-                        # await getattr(cog, cmd.command)(cmd)
 
     def get_req(self):
         self.req += 1
@@ -68,11 +73,14 @@ class QuantumBot:
         self.log.info("starting")
         r = requests.session()
         data = r.get(url="https://tinychat.com/start?#signin")
+        if data.status_code is not 200:
+            self.log.error("is tc down?")
+            sys.exit()
         csrf = regex.search(string=data.text,
                             pattern=r'<meta name="csrf-token" id="csrf-token" content="[a-zA-Z0-9]*').group(0)[49:]
         s_data = {
             "login_username": self.settings["account"]["username"],
-            "login_password": self.settings["account"]["password"],
+            "login_password": self.settings["account"]["password"].__str__(),
             "remember": "1",
             "_token": csrf
         }
@@ -103,16 +111,32 @@ class QuantumBot:
             async for message in self._ws:
                 await self.consumer(message)
 
+    def get_module(self, cog_name):
+        for module in self.modules:
+            if module.__name__ == f"modules.{cog_name.lower()}":
+                return module
+        return importlib.import_module(f"modules.{cog_name.lower()}")
+
     def add_cog(self, cog_name: str):
-        m = importlib.import_module(f"modules.{cog_name.lower()}")
+        m = self.get_module(cog_name)
+        self.modules.append(m)
         cog_class = getattr(m, cog_name)
         cog = cog_class(bot=self)
         self.cogs.append(cog)
+        self.log.debug(f"added {cog_name} to the bot coglist")
 
     def remove_cog(self, cog_name: str):
         for cog in self.cogs:
+            print(f"{cog.name}: {cog_name}")
             if cog.name == cog_name:
                 self.cogs.remove(cog)
+                self.log.debug(f"unloaded {cog_name}")
+                break
+
+    def reload_cog(self, cog_name: str):
+        mod = self.get_module(cog_name)
+        reload(mod)
+        self.log.debug(f"imported the new: {cog_name}")
 
     async def password(self):
         # do not log.
@@ -136,12 +160,13 @@ class QuantumBot:
         if tiny_crap["tc"] == "ping":
             await self.pong()
         if tiny_crap["tc"] == "msg":
-            self.log.chat(str(self.handle_to_name(tiny_crap["handle"])) + ": " + str(tiny_crap["text"]))
+            self.log.chat(f"{self.accounts[tiny_crap['handle']].username}: {tiny_crap['text']}")
             # check for a command, decorators are optional you can do it manually overriding msg in cog
             for prefix in self.settings["bot"]["prefixes"]:
                 # if prefix match continue
                 if tiny_crap["text"].startswith(prefix):
-                    await self.attempt_command(Command(data=tiny_crap, bot=self))
+                    await self.attempt_command(
+                        Command(data=tiny_crap, bot=self, account=self.accounts[tiny_crap["handle"]]))
         if tiny_crap["tc"] == "password":
             await self.password()
 
@@ -155,7 +180,6 @@ class QuantumBot:
         # check for unknown events
         if not found:
             self.log.debug(f"Unknown websocket event: {tiny_crap}")
-            print(f"Unknown websocket event: {tiny_crap}")
 
     def handle_to_name(self, handle):
         return self.accounts[handle].username
