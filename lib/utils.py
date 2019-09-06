@@ -5,6 +5,8 @@ import os
 from lib.qlogging import QuantumLogger
 
 logger = QuantumLogger("utils")
+path = os.path.dirname(os.path.abspath(__file__))
+
 
 def get_decorators(cls):
     target = cls
@@ -28,7 +30,8 @@ def get_decorators(cls):
 
 
 def string_in_file(file: str, search_term: str):
-    with open(f"./../data/app_data/{file}") as data_file:
+    fp = os.path.join(path, f"./../data/app_data/{file}")
+    with open(fp) as data_file:
         data_file.seek(0, 0)
         for cnt, line in enumerate(data_file):
             logger.debug(f"{cnt}: Checking for {search_term} inside {file}:{line}")
@@ -36,15 +39,16 @@ def string_in_file(file: str, search_term: str):
                 data_file.close()
                 logger.debug(f"{cnt}: Found {search_term} inside {file}:{line}")
                 return True
-        logger.debug(f"Not found")
         data_file.close()
+        logger.debug(f"Could not find {search_term} in {file}")
         return False
 
 
 def append_string_in_file(file: str, appended_string: str):
-    with open(f"./../data/app_data/{file}", "a") as data_file:
+    fp = os.path.join(path, f"./../data/app_data/{file}")
+    with open(fp, "a") as data_file:
         data_file.seek(0, 2)
         data_file.writelines(appended_string)
         data_file.flush()
-        logger.debug(f"{appended_string} added to {file} in /data/app_data")
         data_file.close()
+        logger.debug(f"{appended_string} added to {file} in /data/app_data")
