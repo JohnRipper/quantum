@@ -20,9 +20,9 @@ from lib.qlogging import QuantumLogger
 from lib.constants import SocketEvents
 from lib.command import Command
 from lib.account import Account
-from lib.utils import get_commit_sha1
+from lib.utils import get_current_sha1
 
-__version__ = get_commit_sha1()
+__version__ = get_current_sha1()
 
 class QuantumBot:
     def __init__(self):
