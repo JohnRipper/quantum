@@ -31,14 +31,14 @@ Discord has it's own section because it contains a lot of options, most likely e
 - `ignores` - A list of domains/things to ignore. URLs posted by the bot and with the `play` command are ignored already. Supports regular expressions.
 
 #### Module.Captcha
-- `key` - the API key for AntiCaptcha
+- `key` - the API key for AntiCaptcha (see: [AntiCaptcha](https://anti-captcha.com/mainpage))
 
 #### Module.Food2fork
-- `key` - the API key for Food2fork (see: (Food2fork API)[https://www.food2fork.com/about/api])
+- `key` - the API key for Food2fork (see: [Food2fork API](https://www.food2fork.com/about/api))
 
 #### Module.Movie
-- `key` - the API key for The Movie Db (see: (The Movie Database API)[https://developers.themoviedb.org/3/getting-started])
+- `key` - the API key for The Movie Db (see: [The Movie Database API](https://developers.themoviedb.org/3/getting-started))
 - `include_url` - include the iMDb URL in the reply 
 
 #### Module.Youtube
-- `key` - Youtube Data API key, *optional* if you choose to use [your own API](https://developers.google.com/youtube/v3/) key. Has prevented breakage in the past 
+- `key` - Youtube Data API key, *optional* if you choose to use [your own API](https://developers.google.com/youtube/v3/)
