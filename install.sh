@@ -14,6 +14,11 @@ webcam()
     pip3 install --user aioice aiortc
 }
 
+baseextras()
+{
+    base && extras
+}
+
 all()
 {
     base && extras && webcam
@@ -21,8 +26,8 @@ all()
 
 if [ "$#" -eq 0 ];
 then
-    echo "Usage: ./install.sh base | extras | webcam (requires ffmpeg-devel) | all"
-elif [ "$1" = "base" ] || [ "$1" = "extras" ] || [ "$1" = "webcam" ] || [ "$1" = "all" ];
+    echo "Usage: ./install.sh base | extras | baseextras | webcam (requires ffmpeg-devel) | all"
+elif [ "$1" = "base" ] || [ "$1" = "extras" ] || [ "$1" = "baseextras" ] || [ "$1" = "webcam" ] || [ "$1" = "all" ];
 then
      $1
 else
