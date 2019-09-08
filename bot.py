@@ -172,7 +172,6 @@ class QuantumBot:
                 if tiny_crap["text"].startswith(prefix):
                     await self.attempt_command(
                         Command(data=tiny_crap, bot=self, account=self.accounts[tiny_crap["handle"]]))
-                    await self.attempt_command(Command(data=tiny_crap, bot=self))
                 if prefix + "version" in tiny_crap["text"]:
                     await self.send_message(f"Quantum version: {self.version}")
         if tiny_crap["tc"] == "password":
@@ -216,7 +215,7 @@ class QuantumBot:
     def process_message_queue(self):
         if len(self.message_queue) > 0:
             asyncio.run(self.wsend(json.dumps({"tc": "msg", "req": 1, "text": self.message_queue.pop(0)})))
-            asyncio.run(asyncio.sleep(self.rate_limit_seconds))
+        asyncio.run(asyncio.sleep(self.rate_limit_seconds))
 
 
 def process_arg(b: QuantumBot):
