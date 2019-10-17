@@ -8,17 +8,23 @@ class SocketEvents:
     QUIT = "quit"
     PING = "ping"
     YUT_STOP = "yut_stop"
+    YUT_PLAY = "yut_play"
+    YUT_PAUSE = "yut_pause"
     PVTMSG = "pvtmsg"
     ICESERVERS = "iceservers"
+    NICK = "nick"
     PUBLISH = "publish"
     UNPUBLISH = "unpublish"
     STREAM_CONNECTED = "stream_connected"
     STREAM_CLOSED = "stream_closed"
     SDP = "sdp"
 
-    ALL = [MSG, CAPTCHA, USERLIST, JOIN, JOINED, QUIT, PING, YUT_STOP,
-           PVTMSG, ICESERVERS, PUBLISH, UNPUBLISH, STREAM_CONNECTED,
-           STREAM_CLOSED, SDP, CLOSED]
+    ALL = [
+        CAPTCHA, USERLIST, JOIN, JOINED, QUIT, PING,
+        YUT_STOP, YUT_PLAY, YUT_PAUSE,
+        PUBLISH, UNPUBLISH,
+        PVTMSG, MSG, NICK,
+        ICESERVERS, STREAM_CONNECTED, STREAM_CLOSED, SDP, CLOSED]
 
 
 class AppData:
