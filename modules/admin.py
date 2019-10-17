@@ -6,6 +6,15 @@ from lib.utils import string_in_file, append_string_in_file
 
 class Admin(Cog):
 
+    def join(self, data):
+        # VIP mode, only op users cn use the room
+        if self.bot.settings['admin']['vip_enabled']:
+            if self.bot.settings['admin']['vip_kickasban']:
+                return
+            else:
+                # do ban
+                self.bot.ban()
+
     @makeCommand(name='op', description='Remakes help file using file descriptions')
     async def make_help(self, c: Command):
         help = ""
