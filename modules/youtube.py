@@ -7,6 +7,7 @@ from lib.cog import Cog
 import json
 
 from lib.command import makeCommand, Command
+from lib import constants
 
 
 class Youtube(Cog):
@@ -19,7 +20,7 @@ class Youtube(Cog):
             self.apikey = self.settings["key"]
             self.headers = None
         self.song_playing = False
-        self.queue = False
+        self.queue = []
 
         # url parts
         self.base_url = "https://www.googleapis.com/youtube/v3/"
@@ -30,6 +31,13 @@ class Youtube(Cog):
         self.detail_url = "{}videos?part=contentDetails,snippet&id={}&"\
             "fields=items(contentDetails%2Fduration%2Csnippet(channelTitle%2Ctitle))&key={}"
 
+    #############################
+    # Commands
+    #############################
+    @makeCommand(name="pause", description="<name/url/id> - plays a song")
+    async def pause(self, c: Command):
+        # todo send youtube command.
+        return
 
     @makeCommand(name="stop", description= "<name/url/id> - plays a song")
     async def stop(self, c: Command):
@@ -39,6 +47,9 @@ class Youtube(Cog):
     @makeCommand(name="skip", description="<name/url/id> - plays a song")
     async def skip(self, c: Command):
         # todo next song
+        if self.song_playing:
+            # todo send stop command
+            return
         return
 
     @makeCommand(name="play", description= "<name/url/id> - plays a song")
@@ -50,13 +61,13 @@ class Youtube(Cog):
 
         query = requests.utils.quote(c.message)
         search_request = requests.get(
-            url = self.search_url.format(self.base_url, query, self.apikey),
-            headers = self.headers
+            url=self.search_url.format(self.base_url, query, self.apikey),
+            headers=self.headers
         )
         video_id = search_request.json()["items"][0]["id"]["videoId"]
         details = requests.get(
-            url = self.detail_url.format(self.base_url, video_id, self.apikey),
-            headers = self.headers
+            url=self.detail_url.format(self.base_url, video_id, self.apikey),
+            headers=self.headers
         )
         duration = isodate.parse_duration(
             details.json()["items"][0]["contentDetails"]["duration"]
@@ -64,17 +75,37 @@ class Youtube(Cog):
         title = details.json()["items"][0]["snippet"]["title"]
         channel = details.json()["items"][0]["snippet"]["channelTitle"]
         # add a few seconds to duration to help fight premature ejaculation.
+        few_seconds = 3
+
         data = {
-            "tc":"yut_play",
-            "req":36,
+            "tc": constants.SocketEvents.YUT_PLAY,
+            "req": self.get_req(),
             "item": {
-                "id":video_id,
-                "duration":int(duration.total_seconds()) + 3,
-                "offset":0,
+                "id": video_id,
+                "duration": int(duration.total_seconds()) + few_seconds,
+                "offset": 0,
                 "title": "{} — [{}]".format(title, channel)
             }
         }
         await self.play_song(data=data)
+
+    #############################
+    # Helper methods
+    #############################
+
+    async def play_song(self, data: dict):
+        if self.song_playing:
+            self.queue.append(data)
+        else:
+            await self.send_ws(data)
+
+    async def play_next(self):
+        next_song = self.queue.pop()
+        await self.send_ws(json.dumps(next_song))
+
+    #############################
+    # Events
+    #############################
 
     async def yut_stop(self, data: dict):
         self.song_playing = False
@@ -83,14 +114,3 @@ class Youtube(Cog):
 
     async def yut_play(self, data: dict):
         self.song_playing = True
-
-    async def play_song(self, data):
-        if self.song_playing:
-            self.queue.append(data)
-        else:
-            await self.bot.ws.send(json.dumps(data))
-
-    async def play_next(self):
-        next_song = self.queue.pop()
-        await self.bot.ws.send(json.dumps(next_song))
-
