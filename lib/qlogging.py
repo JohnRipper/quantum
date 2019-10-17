@@ -33,8 +33,7 @@ class QuantumLogger(getLoggerClass()):
     CRITICAL = 50
 
     _choices = ((CHAT, "chat"),
-                (WS_EVENT, "wsevent"),
-                (WS_SENT, "wssent"),
+                (WEBSOCKET, "websocket"),
                 (DEBUG, "debug"),
                 (PING, "ping"),
                 (PONG, "pong"),
