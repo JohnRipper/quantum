@@ -17,7 +17,6 @@ def restrictTo(role: (str, int), cls=None, **attrs):
             raise TypeError('Callback is already an instance.')
         f.role = role
         return f
-
     return wrap
 
 
