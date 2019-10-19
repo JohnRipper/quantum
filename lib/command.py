@@ -21,18 +21,11 @@ def restrictTo(role: (str, int), cls=None, **attrs):
 
 
 class Command:
-    def __init__(self, data, bot, account: Account):
-        self._bot = bot
+    def __init__(self, prefix: str, data, sender: str, account: Account):
         self.raw_data = data
         self.command, self.message = f'{data["text"]}{" "}'.split(' ', 1)
         self.prefix = self.command[0]
         self.command = self.command[1:]
         self.account = account
-        # depreciating in favor of lib.Account.
-        self.sender = bot.handle_to_name(data["handle"])
-
-    async def send_message(self, message: str):
-        await self._bot.send_message(message)
-
-    def send_private_message(self, message: str):
-        return
+        # depreciating in favor of lib.account.Account
+        self.sender = sender
