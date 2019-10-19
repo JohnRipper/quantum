@@ -8,6 +8,8 @@ class Cog:
         self.name = self.__class__.__name__
         self.logger = QuantumLogger(self.name)
         self.bot = bot
+        # see default.toml for available settings.
+        self.settings = bot.settings
 
     #############################
     # Helper methods
@@ -22,14 +24,29 @@ class Cog:
         await self.bot.wsend(json.dumps(data))
 
     def get_req(self):
+        # bot side request counter.
         return self.bot.get_req()
 
-    async def do_ban(self, username):
-        # look at ban command, does it use handle or username?
-        return
+    async def do_ban_by_id(self, handle: int):
+        data = {"tc": "ban", "req": 420, "handle": handle}
+        await self.send_ws(data=data)
 
-    async def do_kick(self, username):
-        return
+    async def do_ban_by_username(self, username: str):
+        await self.do_ban_by_id(self.bot.username_to_handle(username))
+
+    async def get_banlist(self):
+        # asks the bot to trigger then banlist event.
+        # Recomended use is to create a flag in your cogs __init__ that you triggered the banlist event
+        # Then override the banlist event with the flag in mind.
+        data = {"tc": "banlist", "req": self.get_req()}
+        await self.send_ws(data=data)
+
+    async def do_kick_by_id(self, handle_id: int):
+        data = {"tc": "kick", "req": self.get_req(), "handle": handle_id}
+        await self.send_ws(data=data)
+
+    async def do_kick_by_username(self, username: str):
+        await self.do_kick_by_id(self.bot.username_to_handle(username))
 
     async def change_nick(self, nickname: str):
         data = {"nick": nickname,
@@ -43,6 +60,12 @@ class Cog:
     #############################
     # Events
     #############################
+    async def sysmsg(self, data):
+        return
+
+    async def banlist(self, data):
+        # gets the current ban list.
+        return
 
     async def closed(self, data):
         # tc closed the connnection
