@@ -22,7 +22,7 @@ from lib.account import Account
 
 from importlib import reload
 from lib.utils import get_current_sha1
-
+import time
 
 __version__ = get_current_sha1()
 
@@ -36,20 +36,26 @@ class QuantumBot:
         self.rate_limit_seconds = 1
         self.message_queue = []
         self.is_running = False
-        self.cogs = []
         self.handle = 0
         self.req = 0
+
+        # todo recheck the load, unload, reload methods
+        # list of imports
         self.modules = []
+        # list of classes
+        self.cogs = []
 
     async def attempt_command(self, cmd: Command):
         for cog in self.cogs:
             # self.logger.debug(dir(cog))
             # todo make it work for aliases
             if hasattr(cog, cmd.command):
+                # f is a reference to a function
                 f = getattr(cog, cmd.command)
                 # commands only run if they were given the _command meta data from the @command decorator
                 if hasattr(f, "_command"):
-                    # check for role.
+                    # check the role attribute
+                    # todo This can be made better up by making role a default attribute in command.py
                     if hasattr(f, "role"):
                         if cmd.account.role[1] >= f.role[1]:
                             asyncio.ensure_future(getattr(cog, cmd.command)(cmd), loop=asyncio.get_event_loop())
@@ -171,9 +177,11 @@ class QuantumBot:
                 # if prefix match continue
                 if tiny_crap["text"].startswith(prefix):
                     await self.attempt_command(
-                        Command(data=tiny_crap, bot=self, account=self.accounts[tiny_crap["handle"]]))
+                        Command(prefix=prefix, data=tiny_crap, sender=self.handle_to_username(tiny_crap["handle"]),
+                                account=self.accounts[tiny_crap["handle"]]))
                 if prefix + "version" in tiny_crap["text"]:
                     await self.send_message(f"Quantum version: {self.version}")
+
         if tiny_crap["tc"] == "password":
             await self.password()
 
@@ -188,13 +196,23 @@ class QuantumBot:
         if not found:
             self.log.debug(f"Unknown websocket event: {tiny_crap}")
 
-    def handle_to_name(self, handle):
+    def handle_to_username(self, handle: int):
         return self.accounts[handle].username
 
-    async def send_message(self, message):
-        # todo split messages into multiple parts if it exceeds limit
+    def username_to_handle(self, username: str):
+        for account in self.accounts:
+            if account.username == username:
+                return account.handle
+
+    async def send_message(self, message: str):
         # 128 characters, 255 bytes
-        self.message_queue.append(message)
+        character_limit = 128
+        if len(message) > character_limit:
+            messages = [message[i:i + character_limit] for i in range(0, len(message), character_limit)]
+            for message in messages:
+                self.message_queue.append(message)
+        else:
+            self.message_queue.append(message)
 
     async def pong(self):
         data = json.dumps({"tc": "pong", "req": self.get_req()})
@@ -256,9 +274,22 @@ def process_arg(b: QuantumBot):
 
 async def start(executor, bot):
     asyncio.get_event_loop().run_in_executor(executor, bot.bot_loop)
-    await bot.connect()
+    run_or_try_again = True
+    while run_or_try_again:
+        try:
+            run_or_try_again = False
+            await bot.connect()
+        except websockets.WebSocketException:
+            bot.log.error("websocket crashed")
+            run_or_try_again = True
+            # wait a bit
+            # did  tc die? or modem die? or was it bad code? who knows what went wrong. going with 5 minutes.
+            time.sleep(300)
+
+
 
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=3, )
 bot = QuantumBot()
 process_arg(bot)
 asyncio.get_event_loop().run_until_complete(start(executor, bot))
+print("completed??? ")
