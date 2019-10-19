@@ -18,6 +18,7 @@ class Template(Cog):
     def reverse_string(self, message: str):
         reverse = message[::-1]
         self.logger.info(f"Reverse {message}:{reverse}")
+
         return reverse
     #############################
     # Commands
@@ -30,7 +31,7 @@ class Template(Cog):
         self.logger.info(f"Echo: {c.message}")
 
         # how to send a message
-        await c.send_message(f"Echo ")
+        await self.send_message(f"Echo ")
 
     @makeCommand(name="amiop", description="<cog_name> reloads a cog")
     @restrictTo(role=Role.OP)
@@ -38,13 +39,13 @@ class Template(Cog):
         # restricted to op and up
 
         # how to send a message
-        await c.send_message(f"Yes have access sir. you are {c.account.role[0]}.")
+        await self.send_message(f"Yes have access sir. you are {c.account.role[0]}.")
 
     @makeCommand(name="reverse", description="<message> reverses a message")
     async def reverse(self, c: Command):
         rm = self.reverse_string(c.message)
         if rm:
-            await c.send_message(f"{c.account.nick}{rm}")
+            await self.send_message(f"{c.account.nick}{rm}")
 
     #############################
     # Events
