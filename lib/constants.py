@@ -6,6 +6,7 @@ class SocketEvents:
     JOIN = "join"
     JOINED = "joined"
     QUIT = "quit"
+    BANLIST = "banlist"
     PING = "ping"
     YUT_STOP = "yut_stop"
     YUT_PLAY = "yut_play"
@@ -18,12 +19,14 @@ class SocketEvents:
     STREAM_CONNECTED = "stream_connected"
     STREAM_CLOSED = "stream_closed"
     SDP = "sdp"
+    SYSMSG = "sysmsg"
 
     ALL = [
-        CAPTCHA, USERLIST, JOIN, JOINED, QUIT, PING,
-        YUT_STOP, YUT_PLAY, YUT_PAUSE,
-        PUBLISH, UNPUBLISH,
         PVTMSG, MSG, NICK,
+        PUBLISH, UNPUBLISH,
+        CAPTCHA, QUIT, PING,
+        YUT_STOP, YUT_PLAY, YUT_PAUSE,
+        BANLIST, USERLIST, JOIN, JOINED, SYSMSG,
         ICESERVERS, STREAM_CONNECTED, STREAM_CLOSED, SDP, CLOSED]
 
 
