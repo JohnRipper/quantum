@@ -10,6 +10,9 @@ class Cog:
         self.bot = bot
         # see default.toml for available settings.
         self.settings = bot.settings
+        self.methods = [getattr(self, name) for name in dir(self) if "__" not in name and callable(getattr(self, name))]
+
+
 
     #############################
     # Helper methods
@@ -49,10 +52,13 @@ class Cog:
         await self.do_kick_by_id(self.bot.username_to_handle(username))
 
     async def change_nick(self, nickname: str):
-        data = {"nick": nickname,
-                "req": self.get_req(),
-                "tc": SocketEvents.NICK}
-        return self.send_ws(data)
+        if nickname or nickname != "":
+            data = {"nick": nickname,
+                    "req": self.get_req(),
+                    "tc": SocketEvents.NICK}
+            await self.send_ws(data)
+        else:
+            await self.send_message("invalid nickname")
 
     async def get_account(self, handle):
         return self.bot.accounts[handle]
