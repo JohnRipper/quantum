@@ -34,6 +34,9 @@ class Account:
         if self.owner:
             self.role = Role.OWNER
 
+        if self.role is Role.NONE:
+            self.role = Role.GUEST
+
         # how to detect people who are not logged in
 
     def is_op(self):
