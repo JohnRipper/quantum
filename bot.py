@@ -60,7 +60,6 @@ class QuantumBot:
                                 asyncio.create_task(getattr(cog, cmd.command)(cmd))
                             else:
                                 await self.send_message("Insufficient Permission to access this command")
-                            break
 
     def get_req(self):
         self.req += 1
