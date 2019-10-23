@@ -16,12 +16,12 @@ from pathlib import Path
 import tomlkit
 
 from lib.qlogging import QuantumLogger
-from lib.constants import SocketEvents
+from lib.constants import SocketEvents as SE
 from lib.command import Command
 from lib.account import Account
 
 from importlib import reload
-from lib.utils import get_current_sha1
+from lib.utils import get_current_sha1, split_string
 import time
 
 __version__ = get_current_sha1()
@@ -47,7 +47,6 @@ class QuantumBot:
 
     async def attempt_command(self, cmd: Command):
         for cog in self.cogs:
-            # self.logger.debug(dir(cog))
             # todo make it work for aliases
             if hasattr(cog, cmd.command):
                 # f is a reference to a function
@@ -155,22 +154,25 @@ class QuantumBot:
             json.dumps({"tc": "password", "req": self.get_req(), "password": self.settings["room"]["password"]}))
 
     async def consumer(self, message: str):
-        self.log.ws_event(message)
         tiny_crap = json.loads(message)
-        if tiny_crap["tc"] == "captcha":
+        if tiny_crap["tc"] == SE.PING:
+            self.log.ping(tiny_crap)
+            await self.pong()
+        else:
+            self.log.ws_event(message)
+
+        if tiny_crap["tc"] == SE.CAPTCHA:
             self.log.warning(f"Captcha needed {tiny_crap}")
-        if tiny_crap["tc"] == "userlist":
+        if tiny_crap["tc"] == SE.USERLIST:
             for user in tiny_crap["users"]:
                 self.accounts.update({user["handle"]: Account(user)})
-        if tiny_crap["tc"] == "joined":
+        if tiny_crap["tc"] == SE.JOINED:
             self.handle = tiny_crap["self"]["handle"]
-        if tiny_crap["tc"] == "join":
+        if tiny_crap["tc"] == SE.JOIN:
             self.accounts.update({tiny_crap["handle"]: Account(tiny_crap)})
-        if tiny_crap["tc"] == "quit":
+        if tiny_crap["tc"] == SE.QUIT:
             self.accounts.pop(tiny_crap["handle"])
-        if tiny_crap["tc"] == "ping":
-            await self.pong()
-        if tiny_crap["tc"] == "msg":
+        if tiny_crap["tc"] == SE.MSG:
             self.log.chat(f"{self.accounts[tiny_crap['handle']].username}: {tiny_crap['text']}")
             # check for a command, decorators are optional you can do it manually overriding msg in cog
             for prefix in self.settings["bot"]["prefixes"]:
@@ -182,12 +184,12 @@ class QuantumBot:
                 if prefix + "version" in tiny_crap["text"]:
                     await self.send_message(f"Quantum version: {self.version}")
 
-        if tiny_crap["tc"] == "password":
+        if tiny_crap["tc"] == SE.PASSWORD:
             await self.password()
 
         found = False
         # runs cog events
-        for t in SocketEvents.ALL:
+        for t in SE.ALL:
             if tiny_crap["tc"] == t:
                 found = True
                 for cog in self.cogs:
@@ -208,7 +210,15 @@ class QuantumBot:
         # 128 characters, 255 bytes
         character_limit = 128
         if len(message) > character_limit:
+            # can split midword
             messages = [message[i:i + character_limit] for i in range(0, len(message), character_limit)]
+
+            # some sort of cancer that can splits under character limit from the last space,
+            # and split words longer than the character limit.
+            # messages = split_string(message, character_limit)
+
+            # bugs out on words greater than the character limit length.
+            # messages = re.findall(r"\w.{0,128}\b", message)
             for message in messages:
                 self.message_queue.append(message)
         else:
