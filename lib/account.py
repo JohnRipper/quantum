@@ -23,6 +23,7 @@ class Account:
 
     # custom fields
     role: (str, int) = Role.NONE
+    tc: str = "None"
 
     def __post_init__(self):
         # check in order to ensure user gets highest available role assigned.
