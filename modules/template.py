@@ -1,6 +1,6 @@
 from lib.account import Role
 from lib.cog import Cog
-from lib.command import Command, makeCommand, restrictTo
+from lib.command import Command, makeCommand
 
 
 class Template(Cog):
@@ -33,8 +33,7 @@ class Template(Cog):
         # how to send a message
         await self.send_message(f"Echo ")
 
-    @makeCommand(name="amiop", description="<cog_name> reloads a cog")
-    @restrictTo(role=Role.OP)
+    @makeCommand(name="amiop", description="<cog_name> reloads a cog", restrict_to=Role.OP)
     async def amiop(self, c: Command):
         # restricted to op and up
 
