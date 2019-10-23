@@ -6,9 +6,9 @@ def makeCommand(name: str, description: str, role: (str, int) = Role.GUEST, cls=
     def wrap(f):
         if isinstance(f, Command):
             raise TypeError('Callback is already a command.')
-        f._command = True
-        f._name = name
-        f._description = description
+        f.command = True
+        f.name = name
+        f.description = description
         f.role = role
         return f
     return wrap
@@ -22,9 +22,8 @@ class Command:
         self.command, self.message = f'{data["text"]}{" "}'.split(' ', 1)
         # clean up the trailing spaces.
         self.message = self.message.strip()
-
-        self.prefix = self.command[0]
-        self.command = self.command[1:]
+        self.prefix = prefix
+        self.command = self.command[len(prefix):]
         self.account = account
         # depreciating in favor of lib.account.Account
         self.sender = sender
