@@ -33,6 +33,11 @@ class Admin(Cog):
         # use an api to post help file somewhere. pastebin/gist
         # send results through socket.
 
+    @makeCommand(name='nick', description='<account> makes op')
+    async def nick(self, c: Command):
+        await self.change_nick(c.message)
+        await self.send_message(f"You may now call me{c.message}.")
+
     @makeCommand(name='op', description='<account> makes op')
     async def make_op(self, c: Command):
         if append_string_in_file(file="op", appended_string=c.message):
