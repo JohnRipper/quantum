@@ -1,3 +1,6 @@
+CHARACTER_LIMIT = 128
+
+
 class SocketEvents:
     MSG = "msg"
     CAPTCHA = "captcha"
@@ -48,3 +51,4 @@ class Role:
     MOD = ("mod", 75)
     OWNER = ("owner", 100)
     ALL_VALID = (NO_ACCOUNT, GUEST, OP, MOD, OWNER)
+
