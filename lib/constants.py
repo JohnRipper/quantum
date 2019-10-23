@@ -20,11 +20,12 @@ class SocketEvents:
     STREAM_CLOSED = "stream_closed"
     SDP = "sdp"
     SYSMSG = "sysmsg"
+    PASSWORD = "password"
 
     ALL = [
         PVTMSG, MSG, NICK,
         PUBLISH, UNPUBLISH,
-        CAPTCHA, QUIT, PING,
+        CAPTCHA, PASSWORD, QUIT, PING,
         YUT_STOP, YUT_PLAY, YUT_PAUSE,
         BANLIST, USERLIST, JOIN, JOINED, SYSMSG,
         ICESERVERS, STREAM_CONNECTED, STREAM_CLOSED, SDP, CLOSED]
