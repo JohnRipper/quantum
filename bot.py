@@ -165,11 +165,11 @@ class QuantumBot:
             self.log.warning(f"Captcha needed {tiny_crap}")
         if tiny_crap["tc"] == SE.USERLIST:
             for user in tiny_crap["users"]:
-                self.accounts.update({user["handle"]: Account(user)})
+                self.accounts.update({user["handle"]: Account(**user)})
         if tiny_crap["tc"] == SE.JOINED:
             self.handle = tiny_crap["self"]["handle"]
         if tiny_crap["tc"] == SE.JOIN:
-            self.accounts.update({tiny_crap["handle"]: Account(tiny_crap)})
+            self.accounts.update({tiny_crap["handle"]: Account(**tiny_crap)})
         if tiny_crap["tc"] == SE.QUIT:
             self.accounts.pop(tiny_crap["handle"])
         if tiny_crap["tc"] == SE.MSG:
