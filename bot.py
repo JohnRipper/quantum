@@ -57,7 +57,7 @@ class QuantumBot:
                 if hasattr(f, "_command"):
                     # check the role attribute
                     if cmd.account.role[1] >= f.role[1]:
-                        asyncio.ensure_future(getattr(cog, cmd.command)(cmd), loop=asyncio.get_event_loop())
+                        asyncio.create_task(getattr(cog, cmd.command)(cmd))
                     else:
                         await self.send_message("Insufficient Permission to access this command")
 
@@ -280,18 +280,18 @@ def process_arg(b: QuantumBot):
 async def start(executor, bot):
     asyncio.get_event_loop().run_in_executor(executor, bot.bot_loop)
     run_or_try_again = True
+    attempts = 5
+    restart_time = 30
     while run_or_try_again:
         try:
             run_or_try_again = False
             await bot.connect()
         except websockets.WebSocketException:
-            bot.log.error("websocket crashed")
-            run_or_try_again = True
-            # wait a bit
-            # did  tc die? or modem die? or was it bad code? who knows what went wrong. going with 5 minutes.
-            time.sleep(300)
-
-
+            bot.log.error("websocket crashed, Restarting in {}")
+            if attempts != 0:
+                run_or_try_again = True
+                attempts -= 1
+            time.sleep(restart_time)
 
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=3, )
 bot = QuantumBot()
