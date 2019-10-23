@@ -22,7 +22,7 @@ class QuantumLogger(getLoggerClass()):
     WS_EVENT = 25
     WS_SENT = 26
 
-    PING = 28
+    PING = 27
     PONG = 28
     # logger levels
     NOTSET = 0
