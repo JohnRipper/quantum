@@ -56,13 +56,10 @@ class QuantumBot:
                 # commands only run if they were given the _command meta data from the @command decorator
                 if hasattr(f, "_command"):
                     # check the role attribute
-                    # todo This can be made better up by making role a default attribute in command.py
-                    if hasattr(f, "role"):
-                        if cmd.account.role[1] >= f.role[1]:
-                            asyncio.ensure_future(getattr(cog, cmd.command)(cmd), loop=asyncio.get_event_loop())
-                    # Anybody can use command.
-                    else:
+                    if cmd.account.role[1] >= f.role[1]:
                         asyncio.ensure_future(getattr(cog, cmd.command)(cmd), loop=asyncio.get_event_loop())
+                    else:
+                        await self.send_message("Insufficient Permission to access this command")
 
     def get_req(self):
         self.req += 1
