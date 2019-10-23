@@ -50,17 +50,17 @@ class QuantumBot:
 
     async def attempt_command(self, cmd: Command):
         for cog in self.cogs:
-            # todo make it work for aliases
-            if hasattr(cog, cmd.command):
-                # f is a reference to a function
-                f = getattr(cog, cmd.command)
-                # commands only run if they were given the _command meta data from the @command decorator
-                if hasattr(f, "_command"):
-                    # check the role attribute
-                    if cmd.account.role[1] >= f.role[1]:
-                        asyncio.create_task(getattr(cog, cmd.command)(cmd))
-                    else:
-                        await self.send_message("Insufficient Permission to access this command")
+            for method in cog.methods:
+                if hasattr(method, "command"):
+                    if hasattr(method, "name"):
+                        if getattr(method, "name") == cmd.command:
+                            # commands only run if they were given the _command meta data from the @command decorator
+                            # check the role attribute
+                            if cmd.account.role[1] >= method.role[1]:
+                                asyncio.create_task(getattr(cog, cmd.command)(cmd))
+                            else:
+                                await self.send_message("Insufficient Permission to access this command")
+                            break
 
     def get_req(self):
         self.req += 1
@@ -199,7 +199,10 @@ class QuantumBot:
             if tiny_crap["tc"] == t:
                 found = True
                 for cog in self.cogs:
-                    await getattr(cog, t.lower())(tiny_crap)
+                    event = getattr(cog, t.lower())
+                    if not hasattr(event, "command"):
+                        await event(tiny_crap)
+
         # check for unknown events
         if not found:
             self.log.debug(f"Unknown websocket event: {tiny_crap}")
