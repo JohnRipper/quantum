@@ -55,11 +55,11 @@ class QuantumLogger(getLoggerClass()):
 
     def ping(self, msg, *args, **kwargs):
         if self.isEnabledFor(self.PING):
-            self._log(self.CHAT, msg, args, **kwargs)
+            self._log(self.PING, msg, args, **kwargs)
 
     def pong(self, msg, *args, **kwargs):
         if self.isEnabledFor(self.PONG):
-            self._log(self.CHAT, msg, args, **kwargs)
+            self._log(self.PONG, msg, args, **kwargs)
 
     def chat(self, msg, *args, **kwargs):
         if self.isEnabledFor(self.CHAT):
