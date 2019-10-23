@@ -56,6 +56,30 @@ def append_string_in_file(file: str, appended_string: str):
         data_file.close()
         logger.debug(f"{appended_string} added to {file} in /data/app_data")
 
+
+def split_string(str, limit, sep=" "):
+    words = str.split(" ")
+    result, part = [], ""
+    for word in words:
+        if len(sep) + len(word) > limit:
+            for i in range(0, len(word), limit):
+                if len(sep) + len(word[i:i + limit]) > limit - len(part):
+                    if part:
+                        result.append(part)
+                        part = ""
+                    result.append(word[i:i + limit])
+                else:
+                    part += sep + word[i:i + limit]
+        elif len(sep) + len(word) > limit - len(part):
+            result.append(part)
+            part = sep + word
+        else:
+            part += sep + word
+    if part != "":
+        result.append(part)
+    return result
+
+
 def get_latest_sha1():
     """Retrieves the latest commit sha1"""
     req = requests.get("https://api.github.com/repos/JohnRipper/quantum/commits")
@@ -63,6 +87,7 @@ def get_latest_sha1():
         # like github
         sha1 = req.json()[0]["sha"][:7]
         return(sha1)
+
 
 def get_current_sha1():
     """Reads .git/refs/heads/master for the current commit"""
