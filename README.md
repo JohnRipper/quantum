@@ -20,12 +20,13 @@ python3 bot.py
 <sub><sub><sub><sub>maybe</sub></sub></sub></sub>
 
 ### Requirements
-Via `install.sh $opt`:
-- `base` - websockets requests tomlkit
+Via `make $opt`:
+- `base` - websockets requests tomlkit (default for make)
 - `extras` (modules) - bs4 anticaptcha isodate
 - `baseextras` - both base and extras dependencies will be installed
 - `webcam` (win32 may not work) - aioice aiortc
 - `all` - all of the above
+<sub>Note: `webcam` requires some extra headers to build, will sort out which and list then later</sub>
 
 ### Configuration
 For general configuration and enabling/disabling available modules; see: [CONFIGURATION.md](https://github.com/JohnRipper/quantum/blob/master/CONFIGURATION.md)
