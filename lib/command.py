@@ -1,20 +1,14 @@
 from lib.account import Account
+from lib.constants import Role
 
-def makeCommand(name, description, cls=None, **attrs):
+
+def makeCommand(name: str, description: str, role: (str, int) = Role.GUEST, cls=None, **attrs):
     def wrap(f):
         if isinstance(f, Command):
             raise TypeError('Callback is already a command.')
         f._command = True
         f._name = name
         f._description = description
-        return f
-    return wrap
-
-
-def restrictTo(role: (str, int), cls=None, **attrs):
-    def wrap(f):
-        if isinstance(f, Command):
-            raise TypeError('Callback is already an instance.')
         f.role = role
         return f
     return wrap
