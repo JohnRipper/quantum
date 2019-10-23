@@ -2,6 +2,8 @@
 Quantum is a modular bot for Tinychat,
 edit the .toml file to enable/disable modules
 """
+import re
+
 import websockets
 import concurrent.futures
 import asyncio
@@ -16,7 +18,7 @@ from pathlib import Path
 import tomlkit
 
 from lib.qlogging import QuantumLogger
-from lib.constants import SocketEvents as SE
+from lib.constants import SocketEvents as SE, CHARACTER_LIMIT
 from lib.command import Command
 from lib.account import Account
 
@@ -33,7 +35,7 @@ class QuantumBot:
         self.log = QuantumLogger("quantum")
         self.settings = None
         self.version = __version__
-        self.rate_limit_seconds = 1
+        self.rate_limit_seconds = 0.3
         self.message_queue = []
         self.is_running = False
         self.handle = 0
@@ -208,20 +210,12 @@ class QuantumBot:
 
     async def send_message(self, message: str):
         # 128 characters, 255 bytes
-        character_limit = 128
-        if len(message) > character_limit:
-            # can split midword
-            messages = [message[i:i + character_limit] for i in range(0, len(message), character_limit)]
-
-            # some sort of cancer that can splits under character limit from the last space,
-            # and split words longer than the character limit.
-            # messages = split_string(message, character_limit)
-
-            # bugs out on words greater than the character limit length.
-            # messages = re.findall(r"\w.{0,128}\b", message)
-            for message in messages:
+        if len(message) > CHARACTER_LIMIT:
+            send_limit = self.settings["bot"]["message_limit"]
+            messages = re.findall("(.{0,128}[ .,;:]|.{0,128})", message)
+            for message in messages[:send_limit]:
                 self.message_queue.append(message)
-        else:
+        elif len(message) <= CHARACTER_LIMIT:
             self.message_queue.append(message)
 
     async def pong(self):
