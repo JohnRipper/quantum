@@ -23,7 +23,12 @@ def restrictTo(role: (str, int), cls=None, **attrs):
 class Command:
     def __init__(self, prefix: str, data, sender: str, account: Account):
         self.raw_data = data
+
+        # requires a trailing space to prevent split from breaking on empty message field.
         self.command, self.message = f'{data["text"]}{" "}'.split(' ', 1)
+        # clean up the trailing spaces.
+        self.message = self.message.strip()
+
         self.prefix = self.command[0]
         self.command = self.command[1:]
         self.account = account
