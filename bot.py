@@ -15,6 +15,7 @@ from pathlib import Path
 
 import tomlkit
 
+from lib import tinychat
 from lib.qlogging import QuantumLogger
 from lib.constants import SocketEvents as SE
 from lib.command import Command
@@ -79,43 +80,48 @@ class QuantumBot:
             self.log.info(f"adding cog: {cog_name}")
             self.add_cog(cog_name)
 
+    def login(self):
+        self.log.info("Beginning login")
+        csrf = tinychat.getcsrf()
+        if csrf is None:
+            self.log.error("Couldn't get CSRF token, exiting...")
+            sys.exit(1)
+        logged_in = tinychat.login(
+            self.settings["account"]["username"],
+            self.settings["account"]["password"],
+            csrf
+        )
+        if logged_in != None:
+            self.log.error(logged_in)
+            sys.exit(1)
+
     async def connect(self):
         self.log.info("starting")
-        r = requests.session()
-        data = r.get(url="https://tinychat.com/start?#signin")
-        if data.status_code is not 200:
-            self.log.error("is tc down?")
-            sys.exit()
-        csrf = regex.search(string=data.text,
-                            pattern=r'<meta name="csrf-token" id="csrf-token" content="[a-zA-Z0-9]*').group(0)[49:]
-        s_data = {
-            "login_username": self.settings["account"]["username"],
-            "login_password": self.settings["account"]["password"],
-            "remember": "1",
-            "_token": csrf
-        }
-        r.post(url="https://tinychat.com/login", data=s_data)
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393",
-            "Accept-Language": "en-US,en;q=0.5",
-            "Accept-Encoding": "gzip, deflate, br",
-        }
-        token = r.get(url="https://tinychat.com/api/v1.0/room/token/" + self.settings["room"]["roomname"])
-        rtc_version_data = r.get(url="https://tinychat.com/room/" + self.settings["room"]["roomname"])
-        rtc_version = regex.search(string=rtc_version_data.text, pattern=r'href="/webrtc/[0-9-.]*').group(0)[13:]
+        self.login()
+        token = tinychat.token(self.settings["room"]["roomname"])
+        if token is None:
+            self.log.error("Couldn't get room token, exiting...")
+            sys.exit(1)
+        rtcversion = tinychat.rtcversion(self.settings["room"]["roomname"])
+        if rtcversion is None:
+            self.log.error("Couldn't get RTC version, exiting...")
+            sys.exit(1)
 
         payload = {
             "tc": "join",
             "req": self.get_req(),
-            "useragent": "tinychat-client-webrtc-chrome_linux x86_64-" + rtc_version,
-            "token": token.json()["result"],
+            "useragent": "tinychat-client-webrtc-chrome_linux x86_64-" + rtcversion,
+            "token": token["result"],
             "room": self.settings["room"]["roomname"],
             "nick": self.settings["room"]["nickname"]
         }
-
-        r.close()
-        async with websockets.connect(uri=token.json()["endpoint"], subprotocols=["tc"],
-                                      extra_headers=headers, timeout=600, origin="https://tinychat.com") as self._ws:
+        async with websockets.connect(
+                uri=token["endpoint"],
+                subprotocols=["tc"],
+                extra_headers=tinychat.HEADERS,
+                timeout=600,
+                origin="https://tinychat.com"
+        ) as self._ws:
             await self.wsend(json.dumps(payload))
             self.is_running = True
             async for message in self._ws:
