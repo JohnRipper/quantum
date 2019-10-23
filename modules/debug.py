@@ -22,6 +22,7 @@ class Debug(Cog):
 
     @makeCommand(name="load", description="<cog_name> reloads a cog")
     async def load(self, c: Command):
+        # Not working, use reload.
         module = c.message.rstrip()
         if module in self.bot.modules:
             await self.send_message("Already loaded")
@@ -33,6 +34,7 @@ class Debug(Cog):
 
     @makeCommand(name="unload", description="<cog_name> reloads a cog")
     async def unload(self, c: Command):
+        # Not working, use reload.
         module = c.message.rstrip()
         if module not in self.bot.modules:
             await self.send_message(f"{module} cannot be unloaded")
@@ -43,4 +45,4 @@ class Debug(Cog):
 
     @makeCommand(name="modules", description="prints a list of modules")
     async def modules(self, c: Command):
-        await self.send_message(self.bot.settings["bot"]["modules"])
+        await self.send_message(str(self.bot.settings["bot"]["modules"]))
