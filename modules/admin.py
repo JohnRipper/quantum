@@ -33,8 +33,8 @@ class Admin(Cog):
         # use an api to post help file somewhere. pastebin/gist
         # send results through socket.
 
-    @makeCommand(name='nick', description='<account> makes op')
-    async def nick(self, c: Command):
+    @makeCommand(name='nick', description='<nickname> set bots nickname ')
+    async def change_nick(self, c: Command):
         await self.change_nick(c.message)
         await self.send_message(f"You may now call me{c.message}.")
 
