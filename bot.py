@@ -159,7 +159,8 @@ class QuantumBot:
             await self.pong()
         else:
             self.log.ws_event(message)
-
+        if tiny_crap["tc"] == SE.NICK:
+            self.accounts[tiny_crap["handle"]].nick = tiny_crap["nick"]
         if tiny_crap["tc"] == SE.CAPTCHA:
             self.log.warning(f"Captcha needed {tiny_crap}")
         if tiny_crap["tc"] == SE.USERLIST:
@@ -197,6 +198,9 @@ class QuantumBot:
         if not found:
             self.log.debug(f"Unknown websocket event: {tiny_crap}")
 
+    def handle_to_nick(self, handle: int):
+        return self.accounts[handle].nick
+
     def handle_to_username(self, handle: int):
         return self.accounts[handle].username
 
@@ -233,7 +237,7 @@ class QuantumBot:
 
     def process_message_queue(self):
         if len(self.message_queue) > 0:
-            asyncio.run(self.wsend(json.dumps({"tc": "msg", "req": 1, "text": self.message_queue.pop(0)})))
+            asyncio.run(self.wsend(json.dumps({"tc": "msg", "req": self.get_req(), "text": self.message_queue.pop(0)})))
         asyncio.run(asyncio.sleep(self.rate_limit_seconds))
 
 
