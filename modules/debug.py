@@ -18,7 +18,7 @@ class Debug(Cog):
         self.bot.reload_cog(module)
         self.bot.add_cog(module)
         self.logger.debug(f"Reloaded module: {module}")
-        await self.bot.send_message(f"Reloaded module: {module}")
+        await self.send_message(f"Reloaded module: {module}")
 
     @makeCommand(name="load", description="<cog_name> reloads a cog")
     async def load(self, c: Command):
@@ -30,7 +30,7 @@ class Debug(Cog):
         self.bot.remove_cog(module)
         botmsg = f"Reloaded module: {module}"
         self.logger.debug(botmsg)
-        await self.bot.send_message(botmsg)
+        await self.send_message(botmsg)
 
     @makeCommand(name="unload", description="<cog_name> reloads a cog")
     async def unload(self, c: Command):

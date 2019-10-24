@@ -57,7 +57,7 @@ class Youtube(Cog):
         # TODO check that this triggers on empty command
         # TODO it doesn't
         if c.message is None or c.message == '':
-            await self.bot.send_message("No url, id, or song name given.")
+            await self.send_message("No url, id, or song name given.")
 
         query = requests.utils.quote(c.message)
         search_request = requests.get(
