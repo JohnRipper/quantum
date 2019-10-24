@@ -8,27 +8,26 @@ class Admin(Cog):
 
     def join(self, data):
         # VIP mode, only op users cn use the room
-        if self.bot.settings['admin']['vip_enabled']:
-            if self.bot.settings['admin']['vip_kickasban']:
+        if self.bot.settings['module.admin']['vip_enabled']:
+            if self.bot.settings['module.admin']['vip_kickasban']:
                 return
             else:
                 # do ban
                 self.bot.ban()
 
-    @makeCommand(name='op', description='Remakes help file using file descriptions')
+    @makeCommand(name='makeHelp', description='Remakes help file using file descriptions')
     async def make_help(self, c: Command):
         help = ""
         help.join("Quantum bot help file\n")
         help.join("\n")
-        # TODO remake help file and post somewhere
-        for module in self.bot.cogs:
-            help.join(f"{module.__name__}\n")
-            method_list = [func for func in dir(module) if callable(getattr(module, func))]
-            for method in method_list:
-                if hasattr(method, "_description"):
-                    print(getattr(module, "_description"))
-                    # todo get method name and aliases
-                    help.join(f"{getattr(module, '_name')} - {getattr(module, '_description')}\n")
+        for cog in self.bot.cogs:
+            help.join(f"******************************\n")
+            help.join(f"{cog.__name__}:\n")
+            for method in cog.methods:
+                if hasattr(method, "command"):
+                    if hasattr(method, "name"):
+                        if hasattr(method, "description"):
+                            help.join(f"{getattr(method, 'name')} - {getattr(method, 'description')}\n")
 
         # use an api to post help file somewhere. pastebin/gist
         # send results through socket.
