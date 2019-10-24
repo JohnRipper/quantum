@@ -36,7 +36,7 @@ class QuantumBot:
         self.log = QuantumLogger("quantum")
         self.settings = None
         self.version = __version__
-        self.rate_limit_seconds = 0.3
+        self.rate_limit_seconds = 0.5
         self.message_queue = []
         self.is_running = False
         self.handle = 0
@@ -221,11 +221,12 @@ class QuantumBot:
         # 128 characters, 255 bytes
         if len(message) > CHARACTER_LIMIT:
             send_limit = self.settings["bot"]["message_limit"]
-            messages = re.findall("(.{0,128}[ .,;:]|.{0,128})", message)
+            message = re.sub("\n", " ", message)
+            messages = re.findall("(.{1,128}[ .,;:]|.{1,128})", message.strip())
             for message in messages[:send_limit]:
-                self.message_queue.append(message)
+                self.message_queue.append(message.strip())
         elif len(message) <= CHARACTER_LIMIT:
-            self.message_queue.append(message)
+            self.message_queue.append(message.strip())
 
     async def pong(self):
         data = json.dumps({"tc": "pong", "req": self.get_req()})
