@@ -223,10 +223,10 @@ class QuantumBot:
             send_limit = self.settings["bot"]["message_limit"]
             message = re.sub("\n", " ", message)
             messages = re.findall("(.{1,128}[ .,;:]|.{1,128})", message.strip())
-            for me in messages[:send_limit]:
-                self.message_queue.append(me.strip())
+            for message in messages[:send_limit]:
+                self.message_queue.append(message.strip())
         elif len(message) <= CHARACTER_LIMIT:
-            self.message_queue.append(me.strip())
+            self.message_queue.append(message.strip())
 
     async def pong(self):
         data = json.dumps({"tc": "pong", "req": self.get_req()})
