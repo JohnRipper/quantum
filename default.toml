@@ -9,6 +9,10 @@ password = ""
 
 [bot]
 prefixes = [ ".", "," ]
+# if a module calls send_message() with a really long string we'll break it
+# up into a list of ~128 characters per list item, then only send this number
+# of messages
+message_limit = 3
 # TODO probably put this in a readme
 welcome_message = "Welcome to {room}, {nick}. {username} | {handle}"
 modules = [
