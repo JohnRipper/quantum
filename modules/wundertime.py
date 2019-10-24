@@ -43,7 +43,9 @@ class WunderTime(Cog):
         if len(c.message) >= 3:
             results = await self.find_time(c.message.strip())
             if results:
-                await self.bot.send_message("Time for {} is {} ({})".format(*results[0]))
+                await self.send_message("Time for {} is {} ({})".format(*results[0]))
+            else:
+                await self.send_message("Couldn't find results for {}".format(c.message))
 
     async def find_time(self, location):
         location = requests.utils.quote(location)

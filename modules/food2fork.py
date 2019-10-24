@@ -17,9 +17,9 @@ class Food2fork(Cog):
         if len(c.message) >= 3:
             res = await self.food_search(c.message)
             if res != None:
-                await self.bot.send_message("{} {} ({}/{})".format(*res[0]))
+                await self.send_message("{} {} ({}/{})".format(*res[0]))
             else:
-                await self.bot.send_message("Couldn't find anything for {}".format(c.message))
+                await self.send_message("Couldn't find anything for {}".format(c.message))
 
     async def food_search(self, search):
         results = []
