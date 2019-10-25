@@ -22,6 +22,20 @@ class Webcam(Cog):
         self.stun_server = None
         self.cammed = False
 
+        # using a physical cam, almost no lag.
+        # options = {"volume": "33"}
+        # player = MediaPlayer("/dev/video0", format="v4l2", options=options)
+
+        # screen grab. laggy.
+
+        self.options = {"volume": "33", "video_size": "640x480"}
+        self.player = MediaPlayer("/dev/video2", format="v4l2", options=self.options)
+
+        if self.player and self.player.audio:
+            self.pc.addTrack(self.player.audio)
+        if self.player and self.player.video:
+            self.pc.addTrack(self.player.video)
+
         @self.pc.on("iceconnectionstatechange")
         async def on_iceconnectionstatechange():
             print("ICE connection state is %s" % self.pc.iceConnectionState)
@@ -106,20 +120,6 @@ class Webcam(Cog):
         self.stun_server = STUN_SERVER
         await self.connection.gather_candidates()
 
-        # using a physical cam, almost no lag.
-        # options = {"volume": "33"}
-        # player = MediaPlayer("/dev/video0", format="v4l2", options=options)
-
-        # screen grab. laggy.
-        options = {"volume": "33", "video_size": "640x480"}
-        player = MediaPlayer("/dev/video2", format="v4l2", options=options)
-
-
-        if player and player.audio:
-            self.pc.addTrack(player.audio)
-        if player and player.video:
-            self.pc.addTrack(player.video)
-
         await self.pc.setLocalDescription(await self.pc.createOffer())
         data = {
             "tc": "sdp",
@@ -128,7 +128,6 @@ class Webcam(Cog):
             "sdp": self.pc.localDescription.sdp,
             "handle": 0
         }
-        print(data)
         await self.bot.wsend(json.dumps(data))
         for c in self.connection.local_candidates:
             data = {
