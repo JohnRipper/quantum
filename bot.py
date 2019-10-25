@@ -222,7 +222,7 @@ class QuantumBot:
         if len(message) > CHARACTER_LIMIT:
             send_limit = self.settings["bot"]["message_limit"]
             message = re.sub("\n", " ", message)
-            messages = re.findall("(.{1,128}[ .,;:]|.{1,128})", message.strip())
+            messages = re.findall("(.{1,400}[ .,;:]|.{1,400})", message.strip())
             for message in messages[:send_limit]:
                 self.message_queue.append(message.strip())
         elif len(message) <= CHARACTER_LIMIT:
