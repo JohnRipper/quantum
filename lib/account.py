@@ -37,12 +37,9 @@ class Account:
         if self.role is Role.NONE:
             self.role = Role.GUEST
 
-        # how to detect people who are not logged in
-
-    def is_op(self):
-        if string_in_file(file=AppData.OP, search_term=self.username):
+    def has_op_access(self):
+        if self.role >= Role.OP:
             return True
-        return False
 
     def is_banned(self):
         if string_in_file(file=AppData.BANNED_ACCOUNTs, search_term=self.username):
@@ -50,8 +47,12 @@ class Account:
         return False
 
     def make_op(self):
-        if not string_in_file(file=AppData.OP, search_term=self.username):
-            append_string_in_file(file=AppData.OP, appended_string=self.username)
+        if self.role <= Role.OP:
+            self.role = Role.OP
+            return True
+        else:
+            # Role level is already higher.
+            return False
 
     def make_banned(self):
         if not string_in_file(file=AppData.BANNED_ACCOUNTs, search_term=self.username):
