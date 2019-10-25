@@ -23,10 +23,9 @@ class Tokes(Cog):
             else:
                 await self.send_message(f"{c.account.username} is calling for tokes in {seconds}!")
             # start counting down.
-            while minutes > 0:
+            for i in range(0, minutes):
                 await asyncio.sleep(60)
-                minutes -= 1
-                if minutes <= 5 & minutes != 0:
+                if minutes - i <= 5 & minutes - i != 0:
                     await self.send_message(f"{minutes} left before tokes. called by {c.account.nick}")
             await asyncio.sleep(seconds)
             await self.send_message(f"Time for tokes! called by {c.account.username}")
