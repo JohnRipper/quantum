@@ -23,28 +23,35 @@ class Template(Cog):
     #############################
     # Commands
     #############################
+    @makeCommand(name="whereami", description="displays the room name and url. )")
+    async def whereami(self, c: Command):
+        # refer too default.toml
+        room_name = self.bot.settings["room_name"]
+
+        # module level settings.
+        string_example = self.settings["string_example"]
+        string = f"{room_name} \n {string_example}"
+        await self.send_message(string)
+
     @makeCommand(name="echo", description="<message> echos a message)")
     async def echo(self, c: Command):
         # how to access the raw data from webocket
         # print(c.raw_data)
         # how to use logger
         self.logger.info(f"Echo: {c.message}")
-
         # how to send a message
         await self.send_message(f"Echo ")
 
     @makeCommand(name="amiop", description="<cog_name> reloads a cog", restrict_to=Role.OP)
     async def amiop(self, c: Command):
-        # restricted to op and up
-
-        # how to send a message
+        # Will not execute if not op.
         await self.send_message(f"Yes have access sir. you are {c.account.role[0]}.")
 
     @makeCommand(name="reverse", description="<message> reverses a message")
     async def reverse(self, c: Command):
         rm = self.reverse_string(c.message)
         if rm:
-            await self.send_message(f"{c.account.nick}{rm}")
+            await self.send_message(f"{rm}")
 
     #############################
     # Events
