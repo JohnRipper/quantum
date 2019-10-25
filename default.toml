@@ -20,6 +20,7 @@ modules = [
 # "Debug",
 # "Discord",
 # "Food2fork",
+# "Fun",
 # "Log",
 # "Movie", # UNTESTED
 # "Urban",
@@ -68,6 +69,7 @@ self_message = "I'm back!!!"
 [module.wikipedia]
 sentences = 4
 language = "en"
+url = true
 
 [module.youtube]
 key = ""

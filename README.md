@@ -87,6 +87,7 @@ Discord has it's own section because it contains a lot of options, most likely e
 #### Module.Wikipedia
 - `sentences` - number of sentences to pull from wikipedia summary
 - `language` - language to use, requires the ISO code. (see: [Wikipedia Supported Languages](https://gist.github.com/Autotonic/96632746355607caa2a611b48552396c))
+- `url` - enable/disable appending the URL for the wikipedia page
 
 #### Module.Youtube
 - `key` - Youtube Data API key, *optional* if you choose to use [your own API](https://developers.google.com/youtube/v3/)
