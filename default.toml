@@ -20,11 +20,13 @@ modules = [
 # "Debug",
 # "Discord",
 # "Food2fork",
+# "Fun",
 # "Log",
 # "Movie", # UNTESTED
 # "Urban",
 # "Webcam",
 # "WunderTime",
+# "Wikipedia",
 # "Youtube",
 ]
 
@@ -63,6 +65,11 @@ hourly_420 = true
 [modules.welcome]
 welcome_message = "Welcome to {room}, {nick}. {username} | {handle}"
 self_message = "I'm back!!!"
+
+[module.wikipedia]
+sentences = 4
+language = "en"
+url = true
 
 [module.youtube]
 key = ""
