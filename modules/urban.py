@@ -15,9 +15,9 @@ class Urban(Cog):
         if len(c.message) >= 3:
             res = await self.urban_search(c.message)
             if res != None:
-                await self.bot.send_message("{term} — {definition}".format(**res))
+                await self.send_message("{term} — {definition}".format(**res))
             else:
-                await self.bot.send_message("Couldn't find that m8")
+                await self.send_message("Couldn't find that m8")
 
     async def urban_search(self, term):
         # TODO blacklist or handle toxic respones, see: "spam"

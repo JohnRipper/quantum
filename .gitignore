@@ -8,3 +8,5 @@ dev.toml
 .#*
 # markdown preview
 README.html
+# pre commit
+cuantum.py

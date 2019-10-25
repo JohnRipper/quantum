@@ -40,10 +40,10 @@ class Admin(Cog):
     @makeCommand(name='op', description='<account> makes op')
     async def make_op(self, c: Command):
         if append_string_in_file(file="op", appended_string=c.message):
-            self.bot.send_message(f"{c.message} has been given op status")
+            self.send_message(f"{c.message} has been given op status")
         else:
             self.logger.debug(f"Could not make {c.message} an op")
-            self.bot.send_message("Command failed.")
+            self.send_message("Command failed.")
 
     @makeCommand(name='check_op', description='<account> check if has op status')
     async def check_op(self, c: Command):
@@ -54,10 +54,10 @@ class Admin(Cog):
     @makeCommand(name='ban', description='<account> attempts to ban')
     async def make_ban_account(self, c: Command):
         if append_string_in_file(file="banned_accounts", appended_string=c.message):
-            self.bot.send_message(f"{c.message} has been given banned status")
+            self.send_message(f"{c.message} has been given banned status")
         else:
             self.logger.debug(f"Could not add {c.message} banned list")
-            self.bot.send_message("Command failed.")
+            self.send_message("Command failed.")
 
     @makeCommand(name='check_ban', description='<account> checks ban')
     async def check_ban_account(self, c: Command):
