@@ -1,3 +1,4 @@
+import datetime
 import re
 import requests
 
@@ -9,6 +10,23 @@ import asyncio
 class Tokes(Cog):
     def __init__(self, bot):
         super().__init__(bot)
+        self.settings = self.bot.settings["module"]["tokes"]
+        self.is_running_hourly = self.bot.settings["module"]["tokes"]
+        # auto start?
+        if self.settings["hourly_420"]:
+            asyncio.create_task(self.it_is_420())
+
+    async def it_is_420(self):
+        while self.bot.is_running & self.is_running_hourly:
+            minutes = datetime.datetime.now().strftime("%M")
+            if minutes == ("20"):
+                await self.send_message("it is 420 somewhere")
+            await asyncio.sleep(60)
+            pass
+
+    @makeCommand(name="420hour", description="enables/disables call for tokes hourly. ")
+    async def hour420(self, c: Command):
+        self.is_running_hourly = not self.is_running_hourly
 
     @makeCommand(name="tokes", description="<int> calls for tokes")
     async def tokes(self, c: Command):
