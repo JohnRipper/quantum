@@ -6,10 +6,14 @@ from lib.utils import string_in_file, append_string_in_file
 
 class Admin(Cog):
 
-    def join(self, data):
+    def __init__(self, bot):
+        super().__init__(bot)
+        self.settings = self.bot.settings["module"]["admin"]
+
+    async def join(self, data):
         # VIP mode, only op users cn use the room
-        if self.bot.settings['module.admin']['vip_enabled']:
-            if self.bot.settings['module.admin']['vip_kickasban']:
+        if self.settings['vip_enabled']:
+            if self.settings['vip_kickasban']:
                 return
             else:
                 # do ban
@@ -39,25 +43,19 @@ class Admin(Cog):
 
     @makeCommand(name='op', description='<account> makes op')
     async def make_op(self, c: Command):
-        if append_string_in_file(file="op", appended_string=c.message):
-            self.send_message(f"{c.message} has been given op status")
-        else:
-            self.logger.debug(f"Could not make {c.message} an op")
-            self.send_message("Command failed.")
+        return
 
     @makeCommand(name='check_op', description='<account> check if has op status')
     async def check_op(self, c: Command):
-        if string_in_file("op", c.message):
-            return True
-        return False
+        return
 
     @makeCommand(name='ban', description='<account> attempts to ban')
     async def make_ban_account(self, c: Command):
         if append_string_in_file(file="banned_accounts", appended_string=c.message):
-            self.send_message(f"{c.message} has been given banned status")
+            await self.send_message(f"{c.message} has been given banned status")
         else:
             self.logger.debug(f"Could not add {c.message} banned list")
-            self.send_message("Command failed.")
+            await self.send_message("Command failed.")
 
     @makeCommand(name='check_ban', description='<account> checks ban')
     async def check_ban_account(self, c: Command):
