@@ -8,15 +8,22 @@ class Cog:
         self.name = self.__class__.__name__
         self.logger = QuantumLogger(self.name)
         self.bot = bot
+
         # see default.toml for available settings.
         self.settings = bot.settings
-        self.methods = [getattr(self, name) for name in dir(self) if "__" not in name and callable(getattr(self, name))]
 
-
+        # list of references to @makeCommand methods
+        self.methods = [getattr(self, name)  # what gets stored.
+                        for name in dir(self)  # loop
+                        if "__" not in name  # ignore builtins
+                        and callable(getattr(self, name))  # is callable
+                        and hasattr(getattr(self, name), "command")  # @makeCommand used
+                        ]
 
     #############################
     # Helper methods
     #############################
+
     async def send_message(self, message: str):
         await self.bot.send_message(message)
 
