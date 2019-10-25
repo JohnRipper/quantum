@@ -11,49 +11,35 @@ password = ""
 prefixes = [ ".", "," ]
 # choose one from [ Chat | Websocket | Debug | error ]
 chat_level = "Chat"
-
-
-# if a module calls send_message() with a really long string we'll break it
-# up into a list of ~128 characters per list item, then only send this number
-# of messages
 message_limit = 3
-# TODO probably put this in a readme
-[modules.welcome]
-welcome_message = "Welcome to {room}, {nick}. {username} | {handle}"
-self_message = "I'm back!!!"
 
-
+# remove the comment to enable
 modules = [
 # "AutoUrl", # WARNING: autourl can and will leak your IP address
 # "Captcha",
 # "Debug",
 # "Discord",
 # "Food2fork",
-  "Log",
+# "Fun",
+# "Log",
 # "Movie", # UNTESTED
 # "Urban",
 # "Webcam",
 # "WunderTime",
+# "Wikipedia",
 # "Youtube",
 ]
+
+#### Module Settings ####
 [module.admin]
 vip_enabled = false
 kick_as_ban = false
-
-[module.template]
-string_example = "https://tinychat.com/room/test"
-
-[module.tokes]
-hourly_420 = true
-
 
 [module.autourl]
 pattern = "http.\\S+"
 exclusion_char = "!"
 # things in url to ignore, regular expressions supported
-ignores = [
-"tinychat.com"
-]
+ignores = ["tinychat.com"]
 
 [module.captcha]
 key = ""
@@ -61,9 +47,29 @@ key = ""
 [module.food2fork]
 key = ""
 
+[module.fun]
+fancydice = true
+8ballcustom = []
+enablerate = false
+
 [module.movie]
 key = ""
 include_url = true
+
+[module.template]
+string_example = "https://tinychat.com/room/test"
+
+[module.tokes]
+hourly_420 = true
+
+[modules.welcome]
+welcome_message = "Welcome to {room}, {nick}. {username} | {handle}"
+self_message = "I'm back!!!"
+
+[module.wikipedia]
+sentences = 4
+language = "en"
+url = true
 
 [module.youtube]
 key = ""
