@@ -6,12 +6,14 @@ from lib.cog import Cog
 from lib.command import makeCommand, Command
 import asyncio
 
+from lib.constants import Role
+
 
 class Tokes(Cog):
     def __init__(self, bot):
         super().__init__(bot)
         self.settings = self.bot.settings["module"]["tokes"]
-        self.is_running_hourly = self.bot.settings["module"]["tokes"]
+        self.is_running_hourly = self.bot.settings["module"]["tokes"]["hourly_420"]
         # auto start?
         if self.settings["hourly_420"]:
             asyncio.create_task(self.it_is_420())
@@ -24,7 +26,7 @@ class Tokes(Cog):
             await asyncio.sleep(60)
             pass
 
-    @makeCommand(name="420hour", description="enables/disables call for tokes hourly. ")
+    @makeCommand(name="420hour", description="enables/disables call for tokes hourly. ", role=Role.MOD)
     async def hour420(self, c: Command):
         self.is_running_hourly = not self.is_running_hourly
 
@@ -37,15 +39,15 @@ class Tokes(Cog):
             # starting message
             if minutes != 0:
                 await self.send_message(
-                    f"{c.account.username} is calling for tokes in {minutes} minutes {seconds} seconds!")
+                    f"{c.account.nick} is calling for tokes in {minutes} minutes {seconds} seconds!")
             else:
-                await self.send_message(f"{c.account.username} is calling for tokes in {seconds}!")
+                await self.send_message(f"{c.account.nick} is calling for tokes in {seconds}!")
             # start counting down.
             for i in range(0, minutes):
                 await asyncio.sleep(60)
                 if minutes - i <= 5 & minutes - i != 0:
                     await self.send_message(f"{minutes} left before tokes. called by {c.account.nick}")
             await asyncio.sleep(seconds)
-            await self.send_message(f"Time for tokes! called by {c.account.username}")
+            await self.send_message(f"Time for tokes! called by {c.account.nick}")
         else:
-            await self.send_message(f"Time for tokes! called by {c.account.username}")
+            await self.send_message(f"Time for tokes! called by {c.account.nick}")

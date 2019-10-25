@@ -27,8 +27,8 @@ class Account:
 
     def __post_init__(self):
         # check in order to ensure user gets highest available role assigned.
-        #if self.is_op():
-        #    self.role = Role.OP
+        if self.has_op_access():
+            self.role = Role.OP
         if self.mod:
             self.role = Role.MOD
         if self.owner:
