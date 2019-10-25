@@ -57,6 +57,7 @@ class QuantumBot:
                             # commands only run if they were given the _command meta data from the @command decorator
                             # check the role attribute
                             if cmd.account.role[1] >= method.role[1]:
+
                                 asyncio.create_task(getattr(cog, cmd.command)(cmd))
                             else:
                                 await self.send_message("Insufficient Permission to access this command")
@@ -141,7 +142,6 @@ class QuantumBot:
 
     def remove_cog(self, cog_name: str):
         for cog in self.cogs:
-            print(f"{cog.name}: {cog_name}")
             if cog.name == cog_name:
                 self.cogs.remove(cog)
                 self.log.debug(f"unloaded {cog_name}")
