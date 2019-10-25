@@ -3,7 +3,7 @@ base:
 	pip3 install --user websockets requests tomlkit
 .PHONY: extras
 extras:
-	pip3 install --user bs4 python_anticaptcha isodate
+	pip3 install --user bs4 python_anticaptcha isodate wikipedia
 .PHONY: webcam
 webcam:
 	pip3 install --user aioice aiortc
