@@ -217,16 +217,19 @@ class QuantumBot:
             if account.username == username:
                 return account.handle
 
-    async def send_message(self, message: str):
-        # 128 characters, 255 bytes
+    async def send_message(self, message: str, clean: bool = True, limit: int = 0):
         if len(message) > CHARACTER_LIMIT:
             send_limit = self.settings["bot"]["message_limit"]
-            message = re.sub("\n", " ", message)
-            messages = re.findall("(.{1,400}[ .,;:]|.{1,400})", message.strip())
+            if limit > 0 and limit <= send_limit:
+                send_limit = limit
+            if clean:
+                message = re.sub("\n", " ", message)
+            # re.DOTALL makes . match everything, including newline
+            messages = re.findall("(.{1,400}[.,;:]|.{1,400})", message, re.DOTALL)
             for message in messages[:send_limit]:
-                self.message_queue.append(message.strip())
+                self.message_queue.append(message)
         elif len(message) <= CHARACTER_LIMIT:
-            self.message_queue.append(message.strip())
+            self.message_queue.append(message)
 
     async def pong(self):
         data = json.dumps({"tc": "pong", "req": self.get_req()})

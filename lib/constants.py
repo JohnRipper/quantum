@@ -1,4 +1,4 @@
-CHARACTER_LIMIT = 128
+CHARACTER_LIMIT = 400
 
 
 class SocketEvents:

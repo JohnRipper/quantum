@@ -24,8 +24,8 @@ class Cog:
     # Helper methods
     #############################
 
-    async def send_message(self, message: str):
-        await self.bot.send_message(message)
+    async def send_message(self, message: str, clean: bool = True):
+        await self.bot.send_message(message, clean=clean)
 
     async def send_private_message(self, message: str):
         await self.bot.send_private(message)
