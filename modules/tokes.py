@@ -1,7 +1,4 @@
 import datetime
-import re
-import requests
-
 from lib.cog import Cog
 from lib.command import makeCommand, Command
 import asyncio
