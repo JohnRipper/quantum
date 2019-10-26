@@ -58,6 +58,7 @@ def append_string_in_file(file: str, appended_string: str):
 
 
 def split_string(str, limit, sep=" "):
+    # do not use this shit.
     words = str.split(" ")
     result, part = [], ""
     for word in words:

@@ -15,7 +15,7 @@ class Debug(Cog):
     async def reload(self,  c: Command):
         module = c.message.rstrip()
         self.bot.remove_cog(module)
-        self.bot.reload_cog(module)
+        self.bot.load_module(module)
         self.bot.add_cog(module)
         self.logger.debug(f"Reloaded module: {module}")
         await self.send_message(f"Reloaded module: {module}")

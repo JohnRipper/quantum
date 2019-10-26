@@ -30,6 +30,7 @@ import time
 __version__ = get_current_sha1()
 
 class QuantumBot:
+
     def __init__(self):
         self._ws = None
         self.accounts = {}
@@ -48,19 +49,19 @@ class QuantumBot:
         # list of classes
         self.cogs = []
 
+    def init(self):
+        self.load_cogs()
+
     async def attempt_command(self, cmd: Command):
         for cog in self.cogs:
             for method in cog.methods:
-                if hasattr(method, "command"):
-                    if hasattr(method, "name"):
-                        if getattr(method, "name") == cmd.command:
-                            # commands only run if they were given the _command meta data from the @command decorator
-                            # check the role attribute
-                            if cmd.account.role[1] >= method.role[1]:
-
-                                asyncio.create_task(getattr(cog, cmd.command)(cmd))
-                            else:
-                                await self.send_message("Insufficient Permission to access this command")
+                if getattr(method, "name") == cmd.command:
+                    # commands only run if they were given the _command meta data from the @command decorator
+                    # check the role attribute
+                    if cmd.account.role[1] >= method.role[1]:
+                        asyncio.create_task(method(cmd))
+                    else:
+                        await self.send_message("Insufficient Permission to access this command")
 
     def get_req(self):
         self.req += 1
@@ -70,7 +71,6 @@ class QuantumBot:
         config = Path(config)
         if config.exists():
             self.settings = tomlkit.loads(config.read_text())
-            self.load_cogs()
         else:
             sys.exit("Configuration not found, exiting.")
 
@@ -112,8 +112,7 @@ class QuantumBot:
             "useragent": "tinychat-client-webrtc-chrome_linux x86_64-" + rtcversion,
             "token": token["result"],
             "room": self.settings["room"]["roomname"],
-            "nick": self.settings["room"]["nickname"]
-        }
+            "nick": self.settings["room"]["nickname"]}
         async with websockets.connect(
                 uri=token["endpoint"],
                 subprotocols=["tc"],
@@ -126,18 +125,19 @@ class QuantumBot:
             async for message in self._ws:
                 await self.consumer(message)
 
-    def get_module(self, cog_name):
+    def load_module(self, cog_name):
         for module in self.modules:
             if module.__name__ == f"modules.{cog_name.lower()}":
+                module = reload(module)
                 return module
-        return importlib.import_module(f"modules.{cog_name.lower()}")
+        m = importlib.import_module(f"modules.{cog_name.lower()}")
+        self.modules.append(m)
+        return m
 
     def add_cog(self, cog_name: str):
-        m = self.get_module(cog_name)
-        self.modules.append(m)
-        cog_class = getattr(m, cog_name)
-        cog = cog_class(bot=self)
-        self.cogs.append(cog)
+        m = self.load_module(cog_name)
+        cog = getattr(m, cog_name)
+        self.cogs.append(cog(self))
         self.log.debug(f"added {cog_name} to the bot coglist")
 
     def remove_cog(self, cog_name: str):
@@ -146,11 +146,6 @@ class QuantumBot:
                 self.cogs.remove(cog)
                 self.log.debug(f"unloaded {cog_name}")
                 break
-
-    def reload_cog(self, cog_name: str):
-        mod = self.get_module(cog_name)
-        reload(mod)
-        self.log.debug(f"imported the new: {cog_name}")
 
     async def password(self):
         # do not log.
@@ -297,6 +292,7 @@ async def start(executor, bot):
     while run_or_try_again:
         try:
             run_or_try_again = False
+            bot.init()
             await bot.connect()
         except websockets.WebSocketException:
             bot.log.error("websocket crashed, Restarting in {}")

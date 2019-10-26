@@ -11,6 +11,10 @@ password = ""
 prefixes = [ ".", "," ]
 # choose one from [ Chat | Websocket | Debug | error ]
 chat_level = "Chat"
+
+# restrict commands [ Guest | Approved | Mod ]
+restrict_to = "Guest"
+
 message_limit = 3
 
 # remove the comment to enable
