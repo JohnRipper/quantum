@@ -2,7 +2,6 @@ from lib.cog import Cog
 from lib.command import Command, makeCommand
 
 import wikipedia
-import requests
 import re
 
 
