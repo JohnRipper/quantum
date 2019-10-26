@@ -1,6 +1,5 @@
 from lib.cog import Cog
 from lib.command import makeCommand, Command
-from lib.constants import AppData
 from lib.utils import string_in_file, append_string_in_file
 
 
@@ -19,19 +18,21 @@ class Admin(Cog):
                 # do ban
                 self.bot.ban()
 
+
     @makeCommand(name='makeHelp', description='Remakes help file using file descriptions')
     async def make_help(self, c: Command):
-        help = ""
-        help.join("Quantum bot help file\n")
-        help.join("\n")
+
+        lines = []
+        lines.append("Quantum bot help file")
         for cog in self.bot.cogs:
-            help.join(f"******************************\n")
-            help.join(f"{cog.__name__}:\n")
+            lines.append(f"******************************")
+            lines.append(f"{cog.name}:")
             for method in cog.methods:
-                if hasattr(method, "command"):
-                    if hasattr(method, "name"):
-                        if hasattr(method, "description"):
-                            help.join(f"{getattr(method, 'name')} - {getattr(method, 'description')}\n")
+                if hasattr(method, "name") & hasattr(method, "description"):
+                    lines.append(f"{getattr(method, 'name')} - {getattr(method, 'description')}")
+        help = "\n".join(lines)
+        append_string_in_file(file="help.txt", appended_string=help)
+
 
         # use an api to post help file somewhere. pastebin/gist
         # send results through socket.
