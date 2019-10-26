@@ -91,3 +91,10 @@ Discord has it's own section because it contains a lot of options, most likely e
 
 #### Module.Youtube
 - `key` - Youtube Data API key, *optional* if you choose to use [your own API](https://developers.google.com/youtube/v3/)
+
+## Thanks to those who have helped make quantum a thing.  
+
+[`@autotonic`](https://github.com/Autotonic) for big brain
+[`@tech`](https://github.com/Technetium1) design and code review
+[`xbc4000`](https://github.com/xbc4000) for the name 
+
