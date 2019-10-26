@@ -123,7 +123,7 @@ class QuantumLogger(getLoggerClass()):
                 handler2.setLevel(level)
                 handler2.setFormatter(formatter)
                 self.addHandler(handler2)
-                self.info(f"Logging level set to {chosen_level[1].upper()}")
+                self.debug(f"Logging level set to {chosen_level[1].upper()}")
                 return True
         # level was not set
         return False
