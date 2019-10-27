@@ -19,7 +19,7 @@ import tomlkit
 
 from lib import tinychat
 from lib.qlogging import QuantumLogger
-from lib.constants import SocketEvents as SE, CHARACTER_LIMIT
+from lib.constants import SocketEvents as SE, Limit
 from lib.command import Command
 from lib.account import Account
 
@@ -37,7 +37,6 @@ class QuantumBot:
         self.log = QuantumLogger("quantum")
         self.settings = None
         self.version = __version__
-        self.rate_limit_seconds = 0.5
         self.message_queue = []
         self.is_running = False
         self.handle = 0
@@ -212,7 +211,7 @@ class QuantumBot:
                 return account.handle
 
     async def send_message(self, message: str, clean: bool = True, limit: int = 0):
-        if len(message) > CHARACTER_LIMIT:
+        if len(message) > Limit.CHARS:
             send_limit = self.settings["bot"]["message_limit"]
             if limit > 0 and limit <= send_limit:
                 send_limit = limit
@@ -222,7 +221,7 @@ class QuantumBot:
             messages = re.findall("(.{1,400}[.,;:]|.{1,400})", message, re.DOTALL)
             for message in messages[:send_limit]:
                 self.message_queue.append(message)
-        elif len(message) <= CHARACTER_LIMIT:
+        elif len(message) <= Limit.CHARS:
             self.message_queue.append(message)
 
     async def pong(self):
@@ -244,7 +243,7 @@ class QuantumBot:
     def process_message_queue(self):
         if len(self.message_queue) > 0:
             asyncio.run(self.wsend(json.dumps({"tc": "msg", "req": self.get_req(), "text": self.message_queue.pop(0)})))
-        asyncio.run(asyncio.sleep(self.rate_limit_seconds))
+        asyncio.run(asyncio.sleep(Limit.MSG_PER_SEC))
 
 
 def process_arg(b: QuantumBot):
