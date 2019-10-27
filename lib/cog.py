@@ -25,7 +25,7 @@ class Cog:
     #############################
 
     async def send_message(self, message: str, clean: bool = True, limit: int = 0):
-        await self.bot.send_message(message, clean=clean)
+        await self.bot.send_message(message, clean=clean, limit=limit)
 
     async def send_private_message(self, message: str):
         await self.bot.send_private(message)
