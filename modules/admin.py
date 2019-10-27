@@ -1,6 +1,6 @@
 from lib.cog import Cog
-from lib.command import makeCommand, Command
-from lib.utils import string_in_file, append_string_in_file
+from lib.command import Command, makeCommand
+from lib.utils import append_string_in_file, string_in_file
 
 
 class Admin(Cog):

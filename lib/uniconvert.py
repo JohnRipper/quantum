@@ -1,5 +1,6 @@
-from unidecode import unidecode
 import styles
+from unidecode import unidecode
+
 
 def decodetxt(text):
     # TODO do the reverse of encode, meh
@@ -24,4 +25,3 @@ def encodetxt(text, style=None):
         if char in style.keys():
             characters[position] = style[char]
     return ''.join(characters)
-

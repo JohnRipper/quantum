@@ -1,7 +1,7 @@
 import requests
 
 from lib.cog import Cog
-from lib.command import makeCommand, Command
+from lib.command import Command, makeCommand
 
 
 class Movie(Cog):
@@ -73,4 +73,3 @@ class Movie(Cog):
             —{overview}
             """.format(**info)
         return response
-

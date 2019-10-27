@@ -1,7 +1,9 @@
-from python_anticaptcha import NoCaptchaTaskProxylessTask, AnticatpchaException, AnticaptchaClient
+import json
+
+from python_anticaptcha import (AnticaptchaClient, AnticatpchaException,
+                                NoCaptchaTaskProxylessTask)
 
 from lib.cog import Cog
-import json
 
 
 class Captcha(Cog):

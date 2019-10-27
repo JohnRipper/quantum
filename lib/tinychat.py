@@ -1,6 +1,6 @@
-import requests
 import re
 
+import requests
 
 SESS = requests.session()
 HEADERS = {

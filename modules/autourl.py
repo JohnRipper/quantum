@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup as bs4
 
 from lib.cog import Cog
 
+
 class AutoUrl(Cog):
     def __init__(self, bot):
         super().__init__(bot)
@@ -46,5 +47,3 @@ class AutoUrl(Cog):
                     return title.strip()
         else:
             self.logger.warning("Got {} from {}".format(res.status_code, url))
-
-
