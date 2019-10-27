@@ -42,6 +42,7 @@ class QuantumBot:
         self.is_running = False
         self.handle = 0
         self.req = 0
+        self.start_time = time.time()
 
         # todo recheck the load, unload, reload methods
         # list of imports
@@ -181,8 +182,6 @@ class QuantumBot:
                     await self.attempt_command(
                         Command(prefix=prefix, data=tiny_crap, sender=self.handle_to_username(tiny_crap["handle"]),
                                 account=self.accounts[tiny_crap["handle"]]))
-                if prefix + "version" in tiny_crap["text"]:
-                    await self.send_message(f"Quantum version: {self.version}")
 
         if tiny_crap["tc"] == SE.PASSWORD:
             await self.password()

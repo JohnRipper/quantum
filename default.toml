@@ -20,6 +20,7 @@ message_limit = 3
 # remove the comment to enable
 modules = [
 # "AutoUrl", # WARNING: autourl can and will leak your IP address
+"Builtins",
 # "Captcha",
 # "Debug",
 # "Discord",
