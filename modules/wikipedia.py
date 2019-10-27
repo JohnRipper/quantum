@@ -1,8 +1,9 @@
-from lib.cog import Cog
-from lib.command import Command, makeCommand
+import re
 
 import wikipedia
-import re
+
+from lib.cog import Cog
+from lib.command import Command, makeCommand
 
 
 class Wikipedia(Cog):

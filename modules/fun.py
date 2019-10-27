@@ -1,6 +1,8 @@
+import random
+
 from lib.cog import Cog
 from lib.command import Command, makeCommand
-import random
+
 
 class Fun(Cog):
     def __init__(self, bot):
@@ -74,4 +76,3 @@ class Fun(Cog):
                      "6/10", "7/10", "8/10", "9/10", "10/10"]
             msg = "I'd rate {} a {}".format(c.message, random.choice(rates))
             await self.send_message(msg)
-

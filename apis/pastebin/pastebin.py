@@ -1,5 +1,6 @@
 # Docs https://pastebin.com/api
 import requests
+
 from apis.pastebin.constants import *
 
 _url = "https://pastebin.com/api/api_post.php"

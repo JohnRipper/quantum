@@ -1,9 +1,10 @@
-from datetime import timedelta
 import time
+from datetime import timedelta
 
-from lib.utils import get_latest_sha1
 from lib.cog import Cog
-from lib.command import makeCommand, Command
+from lib.command import Command, makeCommand
+from lib.utils import get_latest_sha1
+
 
 class Builtins(Cog):
     def __init__(self, bot):
@@ -23,8 +24,3 @@ class Builtins(Cog):
         head = get_latest_sha1()
         msg = f"Current: {current}\nLatest: {head}"
         await self.send_message(msg, clean=False)
-
-
-
-
-

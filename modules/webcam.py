@@ -1,14 +1,12 @@
 import asyncio
 import json
-import aioice
-from aiortc.contrib.media import MediaPlayer
-from aiortc import (
-    RTCPeerConnection,
-    RTCSessionDescription,
-)
-from lib.cog import Cog
-from lib.command import makeCommand, Command
 
+import aioice
+from aiortc import RTCPeerConnection, RTCSessionDescription
+from aiortc.contrib.media import MediaPlayer
+
+from lib.cog import Cog
+from lib.command import Command, makeCommand
 
 
 class Webcam(Cog):

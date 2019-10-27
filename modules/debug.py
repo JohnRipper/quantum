@@ -1,5 +1,5 @@
 from lib.cog import Cog
-from lib.command import makeCommand, Command
+from lib.command import Command, makeCommand
 
 
 class Debug(Cog):

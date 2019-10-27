@@ -2,30 +2,28 @@
 Quantum is a modular bot for Tinychat,
 edit the .toml file to enable/disable modules
 """
-import re
-
-import websockets
-import concurrent.futures
-import asyncio
-import requests
-import json
-import re as regex
-import sys
-import importlib
 import argparse
+import asyncio
+import concurrent.futures
+import importlib
+import json
+import re
+import sys
+import time
+from importlib import reload
 from pathlib import Path
 
+import requests
 import tomlkit
+import websockets
 
 from lib import tinychat
-from lib.qlogging import QuantumLogger
-from lib.constants import SocketEvents as SE, Limit
-from lib.command import Command
 from lib.account import Account
-
-from importlib import reload
+from lib.command import Command
+from lib.constants import Limit
+from lib.constants import SocketEvents as SE
+from lib.qlogging import QuantumLogger
 from lib.utils import get_current_sha1, split_string
-import time
 
 __version__ = get_current_sha1()
 

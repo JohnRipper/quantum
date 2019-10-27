@@ -1,6 +1,7 @@
-from lib.qlogging import QuantumLogger
 import json
+
 from lib.constants import SocketEvents
+from lib.qlogging import QuantumLogger
 
 
 class Cog:

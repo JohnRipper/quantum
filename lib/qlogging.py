@@ -1,7 +1,7 @@
+import logging
 import os
 import sys
-from logging import LogRecord, getLoggerClass, addLevelName, setLoggerClass
-import logging
+from logging import LogRecord, addLevelName, getLoggerClass, setLoggerClass
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 

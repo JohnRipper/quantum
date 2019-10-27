@@ -1,6 +1,7 @@
+from dataclasses import dataclass
+
 from lib.constants import AppData, Role
 from lib.utils import append_string_in_file, string_in_file
-from dataclasses import dataclass
 
 
 @dataclass
