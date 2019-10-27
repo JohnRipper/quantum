@@ -7,7 +7,7 @@ import asyncio
 import concurrent.futures
 import importlib
 import json
-import re as regex
+import re
 import sys
 import time
 from importlib import reload
