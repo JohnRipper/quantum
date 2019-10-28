@@ -39,6 +39,7 @@ async def start(executor, bot):
         try:
             await bot.run()
         except WebSocketException:
+            bot.is_running = False
             bot.log.error(f"websocket crashed, Restarting in {settings['bot']['restart_time']}")
             if settings["bot"]["restart_attempts"] != 0:
                 settings["bot"]["restart_attempts"] -= 1
@@ -49,4 +50,3 @@ executor = futures.ThreadPoolExecutor(max_workers=3, )
 args = process_arg()
 bot = QuantumBot(args)
 asyncio.get_event_loop().run_until_complete(start(executor, bot))
-print("completed??? ")
