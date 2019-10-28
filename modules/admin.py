@@ -21,9 +21,7 @@ class Admin(Cog):
 
     @makeCommand(name='makeHelp', description='Remakes help file using file descriptions')
     async def make_help(self, c: Command):
-
-        lines = []
-        lines.append("Quantum bot help file")
+        lines = ["Quantum bot help file"]
         for cog in self.bot.cogs:
             lines.append(f"******************************")
             lines.append(f"{cog.name}:")
