@@ -31,8 +31,7 @@ __version__ = get_current_sha1()
 
 class QuantumBot:
 
-    def __init__(self):
-        self.rate_limit_seconds = 0.5
+    def __init__(self, args):
         self._ws = None
         self.accounts = {}
         self.log = QuantumLogger("quantum")
@@ -45,6 +44,13 @@ class QuantumBot:
         self.start_time = time.time()
         self.modules = []  # list of imports
         self.cogs = []  # list of classes
+
+        if args.config:
+            if args.config:
+                self.load_config(args.config)
+        if args.logging:
+            if self.log.shortcodes.get(args.logging, False):
+                self.log.set_level(self.log.shortcodes.get(args.logging, False))
 
     async def run(self):
         await self.load_cogs()
@@ -245,49 +251,3 @@ class QuantumBot:
                 asyncio.run(asyncio.sleep(Limit.MSG_PER_SEC))
 
 
-def process_arg(b: QuantumBot):
-    parser = argparse.ArgumentParser(
-        description=__doc__,
-        epilog=f"Quantum {__version__}"
-    )
-    parser.add_argument(
-        "--version", "-v",
-        action="version", version=f"Quantum {__version__}"
-    )
-    parser.add_argument(
-        "--config", "-c",
-        help="path to configuation file",
-        default="default.toml"
-    )
-    parser.add_argument(
-        "--logging", "-l",
-        choices=["i", "c", "ws", "d", "w", "e"],
-        help="set logging to Info, Chat, WebSocket, Debug, Warn, Error; respectively",
-        default="i"
-    )
-    args = parser.parse_args()
-    if args.config:
-        b.load_config(args.config)
-    if args.logging:
-        if bot.log.shortcodes.get(args.logging, False):
-            bot.log.set_level(bot.log.shortcodes.get(args.logging, False))
-
-
-async def start(executor, bot):
-    asyncio.get_event_loop().run_in_executor(executor, bot.process_message_queue)
-    asyncio.get_event_loop().run_in_executor(executor, bot.process_input)
-    settings = bot.settings
-    while settings["bot"]["auto_restart"]:
-        try:
-            await bot.run()
-        except websockets.WebSocketException:
-            bot.log.error(f"websocket crashed, Restarting in {settings['bot']['restart_time']}")
-            if settings["bot"]["restart_attempts"] != 0:
-                settings["bot"]["restart_attempts"] -= 1
-            await asyncio.sleep(settings['bot']['restart_time'])
-
-executor = concurrent.futures.ThreadPoolExecutor(max_workers=3, )
-bot = QuantumBot()
-process_arg(bot)
-asyncio.get_event_loop().run_until_complete(start(executor, bot))
-print("completed??? ")
