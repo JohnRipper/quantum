@@ -1,8 +1,9 @@
 import re
+
 import requests
 
 from lib.cog import Cog
-from lib.command import makeCommand, Command
+from lib.command import Command, makeCommand
 
 
 class Urban(Cog):
@@ -31,4 +32,3 @@ class Urban(Cog):
                 return {"term": term, "definition": definition}
             except (IndexError, KeyError) as error:
                 return None
-

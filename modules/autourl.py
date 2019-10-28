@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup as bs4
 
 from lib.cog import Cog
 
+
 class AutoUrl(Cog):
     def __init__(self, bot):
         super().__init__(bot)
@@ -22,7 +23,9 @@ class AutoUrl(Cog):
             pass
         else:
             if self.ignore_msg(match[0]) is False:
-                await self.send_message(await self.get_title(match[0]))
+                title = await self.get_title(match[0])
+                if title:
+                    await self.send_message(title)
 
     def ignore_msg(self, msg):
         for each in self.settings["ignores"]:
@@ -39,10 +42,8 @@ class AutoUrl(Cog):
                 try:
                     title = soup.title.string
                 except AttributeError as error:
-                    self.bot.warning(erro)
+                    self.logger.warning(error)
                 else:
                     return title.strip()
         else:
             self.logger.warning("Got {} from {}".format(res.status_code, url))
-
-

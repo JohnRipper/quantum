@@ -3,25 +3,28 @@ Quantum is a modular bot for Tinychat,
 edit the .toml file to enable/disable modules
 """
 
-import re
-import websockets
 import concurrent.futures
-import asyncio
-import json
-import sys
-import importlib
 import argparse
+import asyncio
+import concurrent.futures
+import json
+import importlib
+import re
+import sys
+import time
 import tomlkit
+import websockets
 
 from lib import tinychat
-from lib.qlogging import QuantumLogger
-from lib.constants import SocketEvents as SE, CHARACTER_LIMIT
-from lib.command import Command
 from lib.account import Account
+from lib.command import Command
 
 from pathlib import Path
 from importlib import reload
 from lib.utils import get_current_sha1
+from lib.constants import Limit
+from lib.constants import SocketEvents as SE
+from lib.qlogging import QuantumLogger
 
 __version__ = get_current_sha1()
 
@@ -39,6 +42,7 @@ class QuantumBot:
         self.is_running = False
         self.handle = 0
         self.req = 0
+        self.start_time = time.time()
         self.modules = []  # list of imports
         self.cogs = []  # list of classes
 
@@ -175,8 +179,7 @@ class QuantumBot:
                     await self.attempt_command(
                         Command(prefix=prefix, data=tiny_crap, sender=self.handle_to_username(tiny_crap["handle"]),
                                 account=self.accounts[tiny_crap["handle"]]))
-                if prefix + "version" in tiny_crap["text"]:
-                    await self.send_message(f"Quantum version: {self.version}")
+
         if tiny_crap["tc"] == SE.PASSWORD:
             await self.password()
 
@@ -204,16 +207,19 @@ class QuantumBot:
             if account.username == username:
                 return account.handle
 
-    async def send_message(self, message: str):
-        # 128 characters, 255 bytes
-        if len(message) > CHARACTER_LIMIT:
+    async def send_message(self, message: str, clean: bool = True, limit: int = 0):
+        if len(message) > Limit.CHARS:
             send_limit = self.settings["bot"]["message_limit"]
-            message = re.sub("\n", " ", message)
-            messages = re.findall("(.{1,400}[ .,;:]|.{1,400})", message.strip())
+            if limit > 0 and limit <= send_limit:
+                send_limit = limit
+            if clean:
+                message = re.sub("\n", " ", message)
+            # re.DOTALL makes . match everything, including newline
+            messages = re.findall("(.{1,400}[.,;:]|.{1,400})", message, re.DOTALL)
             for message in messages[:send_limit]:
-                self.message_queue.append(message.strip())
-        elif len(message) <= CHARACTER_LIMIT:
-            self.message_queue.append(message.strip())
+                self.message_queue.append(message)
+        elif len(message) <= Limit.CHARS:
+            self.message_queue.append(message)
 
     async def pong(self):
         data = json.dumps({"tc": "pong", "req": self.get_req()})
@@ -236,7 +242,7 @@ class QuantumBot:
                 if len(self.message_queue) > 0:
                     asyncio.run(
                         self.wsend(json.dumps({"tc": "msg", "req": self.get_req(), "text": self.message_queue.pop(0)})))
-                asyncio.run(asyncio.sleep(self.rate_limit_seconds))
+                asyncio.run(asyncio.sleep(Limit.MSG_PER_SEC))
 
 
 def process_arg(b: QuantumBot):

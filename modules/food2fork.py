@@ -1,8 +1,9 @@
 import random
+
 import requests
 
 from lib.cog import Cog
-from lib.command import makeCommand, Command
+from lib.command import Command, makeCommand
 
 
 class Food2fork(Cog):

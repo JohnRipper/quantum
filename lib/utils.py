@@ -97,4 +97,3 @@ def get_current_sha1():
     headfile = Path(cwd / ".git/refs/heads/master")
     sha1 = headfile.read_text()[:7]
     return(sha1)
-

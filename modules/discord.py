@@ -1,6 +1,7 @@
 import json
 
 import requests
+
 from lib.cog import Cog
 
 # https://birdie0.github.io/discord-webhooks-guide/other/slack_formatting.html
@@ -57,4 +58,3 @@ class Discord(Cog):
                 username=data["username"],
                 avatar=data["avatar"]
             )
-

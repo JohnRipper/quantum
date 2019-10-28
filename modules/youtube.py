@@ -1,13 +1,11 @@
-import random
+import json
 
 import isodate
 import requests
 
-from lib.cog import Cog
-import json
-
-from lib.command import makeCommand, Command
 from lib import constants
+from lib.cog import Cog
+from lib.command import Command, makeCommand
 
 
 class Youtube(Cog):

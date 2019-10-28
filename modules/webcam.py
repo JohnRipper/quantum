@@ -1,14 +1,14 @@
 import asyncio
 import json
+
 from dataclasses import dataclass
 
 import aioice
+from aiortc import RTCPeerConnection, RTCSessionDescription
 from aiortc.contrib.media import MediaPlayer
-from aiortc import (
-    RTCPeerConnection,
-    RTCSessionDescription,
-)
+
 from lib.cog import Cog
+from lib.command import Command, makeCommand
 from lib.command import makeCommand, Command
 import ffmpeg
 from enum import Enum
@@ -90,6 +90,8 @@ class Webcam(Cog):
                 self.connection.remote_password = ""
                 self.connection.remote_username = ""
                 asyncio.ensure_future(self.connection.connect(), loop=asyncio.get_event_loop())
+
+
 
     async def stream_closed(self, data):
         # await self.bot.wsend(json.dumps({"tc": "subscribe", "req": 2, "handle": data['handle']}))

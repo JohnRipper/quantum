@@ -1,10 +1,10 @@
-import pytz
 from datetime import datetime
 
+import pytz
 import requests
 
 from lib.cog import Cog
-from lib.command import makeCommand, Command
+from lib.command import Command, makeCommand
 
 # shamelessly stolen
 """
@@ -64,4 +64,3 @@ class WunderTime(Cog):
                     location['tzs']
                 ])
             return results
-

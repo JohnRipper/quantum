@@ -1,37 +1,39 @@
-CHARACTER_LIMIT = 128
-
-
 class SocketEvents:
-    MSG = "msg"
+    BANLIST = "banlist"
     CAPTCHA = "captcha"
     CLOSED = "closed"
-    USERLIST = "userlist"
+    ICESERVERS = "iceservers"
     JOIN = "join"
     JOINED = "joined"
-    QUIT = "quit"
-    BANLIST = "banlist"
-    PING = "ping"
-    YUT_STOP = "yut_stop"
-    YUT_PLAY = "yut_play"
-    YUT_PAUSE = "yut_pause"
-    PVTMSG = "pvtmsg"
-    ICESERVERS = "iceservers"
+    MSG = "msg"
     NICK = "nick"
-    PUBLISH = "publish"
-    UNPUBLISH = "unpublish"
-    STREAM_CONNECTED = "stream_connected"
-    STREAM_CLOSED = "stream_closed"
-    SDP = "sdp"
-    SYSMSG = "sysmsg"
     PASSWORD = "password"
+    PENDING_MODERATION = "pending_moderation"
+    PING = "ping"
+    PUBLISH = "publish"
+    PVTMSG = "pvtmsg"
+    QUIT = "quit"
+    SDP = "sdp"
+    STREAM_CLOSED = "stream_closed"
+    STREAM_CONNECTED = "stream_connected"
+    SYSMSG = "sysmsg"
+    USERLIST = "userlist"
+    UNPUBLISH = "unpublish"
+    YUT_PAUSE = "yut_pause"
+    YUT_PLAY = "yut_play"
+    YUT_STOP = "yut_stop"
 
     ALL = [
-        PVTMSG, MSG, NICK,
-        PUBLISH, UNPUBLISH,
-        CAPTCHA, PASSWORD, QUIT, PING,
-        YUT_STOP, YUT_PLAY, YUT_PAUSE,
-        BANLIST, USERLIST, JOIN, JOINED, SYSMSG,
-        ICESERVERS, STREAM_CONNECTED, STREAM_CLOSED, SDP, CLOSED]
+        BANLIST, CAPTCHA, CLOSED, ICESERVERS, JOIN, JOINED, MSG, NICK, PASSWORD,
+        PENDING_MODERATION, PING, PUBLISH, PVTMSG, QUIT, SDP, STREAM_CLOSED,
+        STREAM_CONNECTED, SYSMSG, USERLIST, UNPUBLISH, YUT_PAUSE, YUT_PLAY,
+        YUT_STOP,
+    ]
+
+
+class Limit:
+    CHARS = 400
+    MSG_PER_SEC = 0.5
 
 
 class AppData:
@@ -51,4 +53,3 @@ class Role:
     MOD = ("mod", 75)
     OWNER = ("owner", 100)
     ALL_VALID = (NO_ACCOUNT, GUEST, OP, MOD, OWNER)
-

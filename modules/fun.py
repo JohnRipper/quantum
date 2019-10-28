@@ -1,6 +1,8 @@
+import random
+
 from lib.cog import Cog
 from lib.command import Command, makeCommand
-import random
+
 
 class Fun(Cog):
     def __init__(self, bot):
@@ -13,9 +15,10 @@ class Fun(Cog):
         if len(c.message) == 0:
             await self.send_message(self.rolldice())
         elif parts[0].isdigit() and parts[1].isdigit():
-            await self.send_message(self.rolldice(sides=parts[0], dice=parts[1]))
+            await self.send_message(
+                self.rolldice(sides=int(parts[0]), dice=int(parts[1])))
         else:
-            await self.send_messages("I need numbers m8")
+            await self.send_message("I need numbers m8")
 
     def rolldice(self, sides=6, dice=1):
         if sides > 20 or dice > 15:
@@ -71,6 +74,5 @@ class Fun(Cog):
         else:
             rates = ["1/10", "2/10", "3/10", "4/10", "5/10",
                      "6/10", "7/10", "8/10", "9/10", "10/10"]
-            msg = "I'd rate {} a {}".format(random.choice(rates), c.message)
+            msg = "I'd rate {} a {}".format(c.message, random.choice(rates))
             await self.send_message(msg)
-

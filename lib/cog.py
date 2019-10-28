@@ -1,6 +1,7 @@
-from lib.qlogging import QuantumLogger
 import json
+
 from lib.constants import SocketEvents
+from lib.qlogging import QuantumLogger
 
 
 class Cog:
@@ -24,8 +25,8 @@ class Cog:
     # Helper methods
     #############################
 
-    async def send_message(self, message: str):
-        await self.bot.send_message(message)
+    async def send_message(self, message: str, clean: bool = True, limit: int = 0):
+        await self.bot.send_message(message, clean=clean, limit=limit)
 
     async def send_private_message(self, message: str):
         await self.bot.send_private(message)
