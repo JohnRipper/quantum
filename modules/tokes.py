@@ -30,9 +30,9 @@ class Tokes(Cog):
     @makeCommand(name="timer", description="a seconds timer ", role=Role.GUEST)
     async def timer(self, c: Command):
         if c.message.isdigit():
-            await self.send_message(f"{c.account.nick} Just set a timer set for {c.message}")
+            await self.send_message(f"{c.account.nick} just set a timer set for {c.message}")
             await asyncio.sleep(int(c.message))
-            await self.send_message(f"{c.account.nick}'s timer set for {c.message}")
+            await self.send_message(f"{c.account.nick} timer has expired!")
 
     @makeCommand(name="tokes", description="<int> calls for tokes")
     async def tokes(self, c: Command):
