@@ -82,7 +82,7 @@ def payload(settings, req):
         "tc": "join",
         "req": req,
         "useragent": f"tinychat-client-webrtc-chrome_linux x86_64-{version}",
-        "token": t.get("result", "Couldntgettoken"),
-        "room": settings.get("roomname", "tt"),  # redirects idiots to tech.
+        "token": t.get("result", ""),
+        "room": settings.get("roomname", "trash"),  # redirects idiots to tech.
         "nick": settings.get("nickname", "omega_reeeeeeee")}
     return result, t
