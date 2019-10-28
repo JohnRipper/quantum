@@ -2,19 +2,15 @@
 Quantum is a modular bot for Tinychat,
 edit the .toml file to enable/disable modules
 """
-import re
 
+import re
 import websockets
 import concurrent.futures
 import asyncio
-import requests
 import json
-import re as regex
 import sys
 import importlib
 import argparse
-from pathlib import Path
-
 import tomlkit
 
 from lib import tinychat
@@ -23,34 +19,32 @@ from lib.constants import SocketEvents as SE, CHARACTER_LIMIT
 from lib.command import Command
 from lib.account import Account
 
+from pathlib import Path
 from importlib import reload
-from lib.utils import get_current_sha1, split_string
-import time
+from lib.utils import get_current_sha1
 
 __version__ = get_current_sha1()
+
 
 class QuantumBot:
 
     def __init__(self):
+        self.rate_limit_seconds = 0.5
         self._ws = None
         self.accounts = {}
         self.log = QuantumLogger("quantum")
         self.settings = None
         self.version = __version__
-        self.rate_limit_seconds = 0.5
         self.message_queue = []
         self.is_running = False
         self.handle = 0
         self.req = 0
+        self.modules = []  # list of imports
+        self.cogs = []  # list of classes
 
-        # todo recheck the load, unload, reload methods
-        # list of imports
-        self.modules = []
-        # list of classes
-        self.cogs = []
-
-    def init(self):
-        self.load_cogs()
+    async def run(self):
+        await self.load_cogs()
+        await self.connect()
 
     async def attempt_command(self, cmd: Command):
         for cog in self.cogs:
@@ -74,9 +68,9 @@ class QuantumBot:
         else:
             sys.exit("Configuration not found, exiting.")
 
-    def load_cogs(self):
+    async def load_cogs(self):
         for cog_name in self.settings["bot"]["modules"]:
-            self.log.info(f"adding cog: {cog_name}")
+            self.log.debug(f"adding cog: {cog_name}")
             self.add_cog(cog_name)
 
     def login(self):
@@ -95,7 +89,7 @@ class QuantumBot:
             sys.exit(1)
 
     async def connect(self):
-        self.log.info("starting")
+        self.log.info("attempting to connect to tinychat")
         self.login()
         token = tinychat.token(self.settings["room"]["roomname"])
         if token is None:
@@ -183,19 +177,17 @@ class QuantumBot:
                                 account=self.accounts[tiny_crap["handle"]]))
                 if prefix + "version" in tiny_crap["text"]:
                     await self.send_message(f"Quantum version: {self.version}")
-
         if tiny_crap["tc"] == SE.PASSWORD:
             await self.password()
 
         found = False
         # runs cog events
-        for t in SE.ALL:
-            if tiny_crap["tc"] == t:
-                found = True
-                for cog in self.cogs:
-                    event = getattr(cog, t.lower())
-                    if not hasattr(event, "command"):
-                        await event(tiny_crap)
+        if tiny_crap["tc"] in SE.ALL:
+            found = True
+            for cog in self.cogs:
+                event = getattr(cog, tiny_crap["tc"])
+                if not hasattr(event, "command"):
+                    await event(tiny_crap)
 
         # check for unknown events
         if not found:
@@ -233,16 +225,18 @@ class QuantumBot:
         self.log.ws_send(message)
         await self._ws.send(message)
 
-    def bot_loop(self):
+    def process_input(self):
         while True:
             if self.is_running:
-                self.process_message_queue()
-                # possible to add a loop to modules? idk what ppl would use it for.
+                f = input()
 
     def process_message_queue(self):
-        if len(self.message_queue) > 0:
-            asyncio.run(self.wsend(json.dumps({"tc": "msg", "req": self.get_req(), "text": self.message_queue.pop(0)})))
-        asyncio.run(asyncio.sleep(self.rate_limit_seconds))
+        while True:
+            if self.is_running:
+                if len(self.message_queue) > 0:
+                    asyncio.run(
+                        self.wsend(json.dumps({"tc": "msg", "req": self.get_req(), "text": self.message_queue.pop(0)})))
+                asyncio.run(asyncio.sleep(self.rate_limit_seconds))
 
 
 def process_arg(b: QuantumBot):
@@ -269,34 +263,22 @@ def process_arg(b: QuantumBot):
     if args.config:
         b.load_config(args.config)
     if args.logging:
-        switcher = {
-            "i": QuantumLogger.INFO,
-            "c": QuantumLogger.CHAT,
-            "ws": QuantumLogger.WEBSOCKET,
-            "d": QuantumLogger.DEBUG,
-            "w": QuantumLogger.WARNING,
-            "e": QuantumLogger.ERROR
-        }
-        if switcher.get(args.logging, False):
-            bot.log.set_level(switcher.get(args.logging, False))
+        if bot.log.shortcodes.get(args.logging, False):
+            bot.log.set_level(bot.log.shortcodes.get(args.logging, False))
 
 
 async def start(executor, bot):
-    asyncio.get_event_loop().run_in_executor(executor, bot.bot_loop)
-    run_or_try_again = True
-    attempts = 5
-    restart_time = 30
-    while run_or_try_again:
+    asyncio.get_event_loop().run_in_executor(executor, bot.process_message_queue)
+    asyncio.get_event_loop().run_in_executor(executor, bot.process_input)
+    settings = bot.settings
+    while settings["bot"]["auto_restart"]:
         try:
-            run_or_try_again = False
-            bot.init()
-            await bot.connect()
+            await bot.run()
         except websockets.WebSocketException:
-            bot.log.error("websocket crashed, Restarting in {}")
-            if attempts != 0:
-                run_or_try_again = True
-                attempts -= 1
-            time.sleep(restart_time)
+            bot.log.error(f"websocket crashed, Restarting in {settings['bot']['restart_time']}")
+            if settings["bot"]["restart_attempts"] != 0:
+                settings["bot"]["restart_attempts"] -= 1
+            await asyncio.sleep(settings['bot']['restart_time'])
 
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=3, )
 bot = QuantumBot()
