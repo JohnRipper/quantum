@@ -27,7 +27,6 @@ from lib.qlogging import QuantumLogger
 
 __version__ = get_current_sha1()
 
-
 class QuantumBot:
 
     def __init__(self, args):
@@ -230,6 +229,7 @@ class QuantumBot:
         while True:
             if self.is_running:
                 f = input()
+                asyncio.run(self.send_message(f))
 
     def process_message_queue(self):
         while True:
