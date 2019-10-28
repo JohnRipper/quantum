@@ -40,7 +40,7 @@ class Template(Cog):
         # how to use logger
         self.logger.info(f"Echo: {c.message}")
         # how to send a message
-        await self.send_message(f"Echo ")
+        await self.send_message(f"Echo {c.message}")
 
     @makeCommand(name="amiop", description="<cog_name> reloads a cog", restrict_to=Role.OP)
     async def amiop(self, c: Command):
