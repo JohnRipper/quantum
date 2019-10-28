@@ -10,7 +10,11 @@ password = ""
 [bot]
 prefixes = [ ".", "," ]
 # choose one from [ Chat | Websocket | Debug | error ]
-chat_level = "Chat"
+log_level = "Chat"
+prefixes = [ "*"]
+auto_restart = true
+restart_time = 30
+restart_attempts = 5
 
 # restrict commands [ Guest | Approved | Mod ]
 restrict_to = "Guest"
