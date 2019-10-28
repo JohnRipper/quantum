@@ -44,7 +44,7 @@ def login(username: str, password: str, csrf: str):
 
 
 def rtcversion(room: str) -> str:
-    req = SESS.get(url="https://tinychat.com/room"+room)
+    req = SESS.get(url=f"https://tinychat.com/room/{room}")
     if req.status_code == 200:
         match = re.search("webrtc\/([0-9.-]+)\/", req.text)
         rtcversion = match[1]
@@ -54,8 +54,35 @@ def rtcversion(room: str) -> str:
 
 # TODO -> typing.Dict
 def token(room: str):
-    req = SESS.get(url="https://tinychat.com/api/v1.0/room/token/"+room)
+    req = SESS.get(url=f"https://tinychat.com/api/v1.0/room/token/{room}")
     if req.status_code == 200:
         return req.json()
     else:
         return None
+
+
+class TokenException(Exception):
+    pass
+
+
+class RTCVersionException(Exception):
+    pass
+
+
+def payload(settings, req):
+    t = token(settings.get("roomname", None))
+    if t is None:
+        raise TokenException
+
+    version = rtcversion(settings.get("roomname", None))
+    if rtcversion is None:
+        raise RTCVersionException
+
+    result = {
+        "tc": "join",
+        "req": req,
+        "useragent": f"tinychat-client-webrtc-chrome_linux x86_64-{version}",
+        "token": t.get("result", "Couldntgettoken"),
+        "room": settings.get("roomname", "tt"),  # redirects idiots to tech.
+        "nick": settings.get("nickname", "omega_reeeeeeee")}
+    return result, t

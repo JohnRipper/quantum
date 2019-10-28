@@ -3,10 +3,7 @@ Quantum is a modular bot for Tinychat,
 edit the .toml file to enable/disable modules
 """
 
-import concurrent.futures
-import argparse
 import asyncio
-import concurrent.futures
 import json
 import importlib
 import re
@@ -21,6 +18,8 @@ from lib.command import Command
 
 from pathlib import Path
 from importlib import reload
+
+from lib.tinychat import TokenException, RTCVersionException
 from lib.utils import get_current_sha1
 from lib.constants import Limit
 from lib.constants import SocketEvents as SE
@@ -101,22 +100,12 @@ class QuantumBot:
     async def connect(self):
         self.log.info("attempting to connect to tinychat")
         self.login()
-        token = tinychat.token(self.settings["room"]["roomname"])
-        if token is None:
-            self.log.error("Couldn't get room token, exiting...")
+        try:
+            room_settings = self.settings["room"]
+            payload, token = tinychat.payload(settings=room_settings, req=self.get_req())
+        except (TokenException, RTCVersionException) as e:
+            self.log.error(e)
             sys.exit(1)
-        rtcversion = tinychat.rtcversion(self.settings["room"]["roomname"])
-        if rtcversion is None:
-            self.log.error("Couldn't get RTC version, exiting...")
-            sys.exit(1)
-
-        payload = {
-            "tc": "join",
-            "req": self.get_req(),
-            "useragent": "tinychat-client-webrtc-chrome_linux x86_64-" + rtcversion,
-            "token": token["result"],
-            "room": self.settings["room"]["roomname"],
-            "nick": self.settings["room"]["nickname"]}
         async with websockets.connect(
                 uri=token["endpoint"],
                 subprotocols=["tc"],
