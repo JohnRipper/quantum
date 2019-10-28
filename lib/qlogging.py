@@ -41,6 +41,15 @@ class QuantumLogger(getLoggerClass()):
                 (WARNING, "warning"),
                 (ERROR, "error"))
 
+    shortcodes = {
+        "i": INFO,
+        "c": CHAT,
+        "ws": WEBSOCKET,
+        "d": DEBUG,
+        "w": WARNING,
+        "e": ERROR
+    }
+
     def __init__(self, name, level=20, chat_handler=True):
         super().__init__(name, level)
         addLevelName(self.CHAT, "CHAT")
