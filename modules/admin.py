@@ -36,9 +36,9 @@ class Admin(Cog):
         # send results through socket.
 
     @makeCommand(name='nick', description='<nickname> set bots nickname ')
-    async def change_nick(self, c: Command):
+    async def nick(self, c: Command):
         await self.change_nick(c.message)
-        await self.send_message(f"You may now call me{c.message}.")
+        await self.send_message(f"You may now call me {c.message}.")
 
     @makeCommand(name='op', description='<account> makes op')
     async def make_op(self, c: Command):
