@@ -256,7 +256,7 @@ class Youtube(Cog):
             "req": self.get_req(),
             "item": {
                 "id": self.active_video.id,
-                "offset": self.timer.current
+                "offset": self.active_video.offset
             }
         }
         await self.send_ws(data)
@@ -269,7 +269,7 @@ class Youtube(Cog):
             "item": {
                 "id": self.active_video.id,
                 "duration": self.active_video.duration,
-                "offset": 0
+                "offset": self.active_video.offset
             }
         }
         self.active_video = None
