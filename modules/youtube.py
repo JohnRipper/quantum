@@ -140,7 +140,7 @@ class Youtube(Cog):
             video = self.playlist[index]
             await self.remove_message(f"Removed {video.title} at {index}")
             await self.remove_video(index=index)
-        else:
+        elif len(self.playlist) > 0:
             await self.remove_video(title=c.message)
 
     @makeCommand(name="now", description="")
@@ -388,7 +388,7 @@ class Youtube(Cog):
         url = "https://www.googleapis.com/youtube/v3/playlistItems?" \
                           "playlistId={}&part=snippet,id&key={}"
         if max > 0 and max <= 50:
-            url+="&maxResults{}".format(self.settings["playlist_max"])
+            url+="&maxResults={}".format(self.settings["playlist_max"])
         else:
             url+="&maxResults=50"
         self.logger.info(f"get_playlist_info: GET {url}")
