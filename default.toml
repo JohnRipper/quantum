@@ -82,6 +82,8 @@ url = true
 
 [module.youtube]
 key = ""
+# 50 is limit until API is paginated
+playlist_max = 50
 
 [discord]
 # channel not needed for webhook
