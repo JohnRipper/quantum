@@ -2,11 +2,11 @@
 *.log
 # local toml
 dev.toml
-# vim swps
+# temp files
 *.swp
-# emacs tmp
 .#*
+*.tmp
+*.temp
 # markdown preview
 README.html
-# pre commit
-cuantum.py
+

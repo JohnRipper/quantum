@@ -1,11 +1,14 @@
 # Quantum
 A modularized bot for Tinychat. **WIP AF**
 ## Running
-Quantum relies on Python 3.7+ and only 3.7+ any version less and it *probably* won't work. It's advised to copy [`default.toml`](ttps://github.com/JohnRipper/quantum/blob/master/default.toml) and rename it. Current options are `bot.py -h,-c,-l`; --help, --config, --logging respectively. Run the bot with the following:
+Quantum relies on Python 3.7+ and only 3.7+ any version less and it *probably* won't work. It's advised to copy [`default.toml`](ttps://github.com/JohnRipper/quantum/blob/master/default.toml) and rename it. Current options are `bot.py -h,-c,-l`; --help, --config, --logging respectively.
+
+Run the bot with the following:
 ```
 python3 bot.py -c your_config.toml
 ```
-`-c` and `-l` are both optional, without `-c` the bot will load `default.toml`<break>
+`-c` and `-l` are both optional, without `-c` the bot will load `default.toml`
+
 Available log levels are:
 - `i` - Info
 - `c` - Chat
@@ -28,6 +31,8 @@ Via `make $opt`:
 
 ### Modules
 Information on implementing new modules can be found in: [Modules](https://github.com/JohnRipper/quantum/tree/master/modules)
+
+A table of commands for each module can be found in: [Commands] (https://github.com/JohnRipper/quantum/blob/master/COMMANDS.md)
 
 ## Configuration
 This document is divided into sections the same as [`default.toml`](https://github.com/JohnRipper/quantum/blob/master/default.toml)
@@ -57,8 +62,8 @@ Discord has it's own section because it contains a lot of options, most likely e
 - `bot.message` - Message that will be posted to the webhook, It will be formated with `{option}`. List of available options to format will come, eventually
 
 #### Module.Admin
-`vip_enabled` - TODO
-`kick_as_ban` - Don't ever ban, only kick
+- `vip_enabled` - TODO
+- `kick_as_ban` - Don't ever ban, only kick
 
 #### Module.Autourl
 **WARNING:** Autourl can and will reveal the bot's IP address by posting it in the room. This is not an issue for those who run the bot on a remote server, but certainly something to be aware of when running from home. To be honest this is unavoidable, if you think you've sorted out a way to prevent it from happening then feel free to make a pull request. Use with discretion.
@@ -91,10 +96,13 @@ Discord has it's own section because it contains a lot of options, most likely e
 
 #### Module.Youtube
 - `key` - Youtube Data API key, *optional* if you choose to use [your own API](https://developers.google.com/youtube/v3/)
+- `playlist_max` - Maximum amount of videos to add from a playlist (current is 50 until the API is paginated)
 
-## Thanks to those who have helped make quantum a thing.  
+## Thanks to those who have helped make quantum a thing
 
 [`@autotonic`](https://github.com/Autotonic) for big brain
+
 [`@tech`](https://github.com/Technetium1) design and code review
+
 [`xbc4000`](https://github.com/xbc4000) for the name 
 
