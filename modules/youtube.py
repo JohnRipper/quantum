@@ -110,7 +110,7 @@ class Youtube(Cog):
     async def pause(self, c: Command):
         if self.active_video:
             await self.pause_video()
-            await self.send_message(f"Pausing timer at {self.timer.current}/{self.timer.duration}")
+            await self.send_message(f"Pausing timer at {self.video.offset}/{self.video.duration}")
 
     @makeCommand(name="resume", description="")
     async def resume(self, c: Command):
@@ -168,8 +168,9 @@ class Youtube(Cog):
 
     @makeCommand(name="pl", description="")
     async def playlistlist(self, c: Command):
+        lines = 5
         if len(self.playlist) > 0:
-            sliced = islice(self.playlist, 0, len(self.playlist), 1)
+            sliced = islice(self.playlist, 0, lines, 1)
             _ = 0
             playlist = []
             for slice in sliced:
@@ -197,14 +198,16 @@ class Youtube(Cog):
             await self.start_video(video)
             return False
 
-    async def start_video(self, video: Video):
+    async def start_video(self, video: Video, notself: bool = False):
         self.active_video = video
         self.timer = Timer(video.duration)
         self.timer.current = video.offset
         # create_task() seems to be the correct thing to use?
         asyncio.create_task(self.timer.start())
         #asyncio.ensure_future(self.timer.start(), loop=asyncio.get_event_loop())
-        await self.send_yut_play(video)
+        # HACK
+        if notself is False:
+            await self.send_yut_play(video)
 
     async def pause_video(self):
         self.timer.pause()
@@ -215,7 +218,7 @@ class Youtube(Cog):
         if len(self.playlist) > 0:
             next = self.playlist.pop()
             self.active_video = next
-            self.playlist.popleft()
+            # self.playlist.popleft()
             self.logger.info(f"next_video: playing {next}")
             await self.start_video(next)
 
@@ -286,7 +289,7 @@ class Youtube(Cog):
         else:
             video = await self.get_video_info(data["item"]["id"])
             self.logger.info(f"Overplayed, setting as active: {video.title}")
-            self.active_video = video
+            await self.start_video(video, notself=True)
 
     async def yut_pause(self, data: dict) -> None:
         if self.timer and self.timer.running:
@@ -296,6 +299,8 @@ class Youtube(Cog):
         self.active_video = None
         self.timer = None
         await self.next_video()
+        if len(self.playlist) > 1:
+            self.playlist.popleft()
 
     ### Youtube API
     async def find_video_id(self, query: str) -> Video:
