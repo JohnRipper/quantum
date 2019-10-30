@@ -32,7 +32,7 @@ Via `make $opt`:
 ### Modules
 Information on implementing new modules can be found in: [Modules](https://github.com/JohnRipper/quantum/tree/master/modules)
 
-A table of commands for each module can be found in: [Commands] (https://github.com/JohnRipper/quantum/blob/master/COMMANDS.md)
+A table of commands for each module can be found in: [Commands](https://github.com/JohnRipper/quantum/blob/master/COMMANDS.md)
 
 ## Configuration
 This document is divided into sections the same as [`default.toml`](https://github.com/JohnRipper/quantum/blob/master/default.toml)
