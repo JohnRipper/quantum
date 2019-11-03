@@ -1,5 +1,8 @@
 # Quantum
 A modularized bot for Tinychat. **WIP AF**
+Note while the bot works as of 10/31/2019, this project is no longer being actively maintained. Feel free to fork and learn from it.
+
+
 ## Running
 Quantum relies on Python 3.7+ and only 3.7+ any version less and it *probably* won't work. It's advised to copy [`default.toml`](ttps://github.com/JohnRipper/quantum/blob/master/default.toml) and rename it. Current options are `bot.py -h,-c,-l`; --help, --config, --logging respectively.
 
